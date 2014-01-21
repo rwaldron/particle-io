@@ -38,7 +38,7 @@ This is copied directly from [The Tinker API](http://docs.spark.io/#/start/tinke
 
 > The parameters must be the pin (A0 to A7, D0 to D7), followed by either HIGH or LOW, separated by a comma. The return value will be 1 if the write succeeds, and -1 if it fails.
 
-[Tinker API: digitalWrite](http://docs.spark.io/#/start/the-tinker-api-digitalwrite)
+> [Tinker API: digitalWrite](http://docs.spark.io/#/start/the-tinker-api-digitalwrite)
 
 Example:
 ```js
@@ -54,7 +54,7 @@ board.digitalWrite("D7", 1);
 
 > The parameters must be the pin (A0 to A7, D0 to D7), followed by an integer value from 0 to 255, separated by a comma. The return value will be 1 if the write succeeds, and -1 if it fails.
 
-[Tinker API: analogWrite](http://docs.spark.io/#/start/the-tinker-api-analogwrite)
+> [Tinker API: analogWrite](http://docs.spark.io/#/start/the-tinker-api-analogwrite)
 
 Example:
 ```js
@@ -71,7 +71,7 @@ board.analogWrite("A7", 255);
 
 > The parameters must be the pin (A0 to A7, D0 to D7). The return value will be between 0 and 4095 if the read succeeds, and -1 if it fails.
 
-[Tinker API: digitalRead](http://docs.spark.io/#/start/the-tinker-api-digitalread)
+> [Tinker API: digitalRead](http://docs.spark.io/#/start/the-tinker-api-digitalread)
 
 Example:
 ```js
@@ -88,7 +88,7 @@ board.digitalRead("D1", function(data) {
 
 > The parameters must be the pin (A0 to A7, D0 to D7). The return value will be between 0 and 4095 if the read succeeds, and -1 if it fails.
 
-[Tinker API: analogRead](http://docs.spark.io/#/start/the-tinker-api-analogread)
+> [Tinker API: analogRead](http://docs.spark.io/#/start/the-tinker-api-analogread)
 
 Example:
 ```js
