@@ -42,49 +42,38 @@ void loop() {
 
       if (action == 0x00) {
         // TODO: pinMode
+        int pin = client.read();
+        int mode = client.read();
 
+        if (mode == 0x00) {
+          pinMode(pin, INPUT);
+        } else if (mode == 0x01) {
+          pinMode(pin, INPUT_PULLUP);
+        } else if (mode == 0x02) {
+          pinMode(pin, INPUT_PULLDOWN);
+        } else if (mode == 0x03) {
+          pinMode(pin, OUTPUT);
+        }
       } else if (action == 0x01) {
         // digitalWrite
-        char pinSet = client.read();
         int pin = client.read();
         int value = client.read();
-        if (pinSet == 'A') {
-          pin = pin + 10;
-        }
-        pinMode(pin, OUTPUT);
         digitalWrite(pin, value);
       } else if (action == 0x02) {
         // analogWrite
-        char pinSet = client.read();
         int pin = client.read();
         int value = client.read();
-        if (pinSet == 'A') {
-          pin = pin + 10;
-        }
-        pinMode(pin, OUTPUT);
         analogWrite(pin, value);
       } else if (action == 0x03) {
         // digitalRead
-        char pinSet = client.read();
-        int rawPin = client.read();
-        int pin = rawPin;
-        if (pinSet == 'A') {
-          pin = pin + 10;
-        }
-        pinMode(pin, INPUT_PULLDOWN);
+        int pin = client.read();
         int val = digitalRead(pin);
-        client.write(pinSet+rawPin+":"+val);
+        client.write(pin+":"+val);
       } else if (action == 0x04) {
         // analogRead
-        char pinSet = client.read();
-        int rawPin = client.read();
-        int pin = rawPin;
-        if (pinSet == 'A') {
-          pin = pin + 10;
-        }
-        pinMode(pin, INPUT_PULLDOWN);
+        int pin = client.read();
         int val = analogRead(pin);
-        client.write(pinSet+rawPin+":"+val);
+        client.write(pin+":"+val);
       }
     }
   }
