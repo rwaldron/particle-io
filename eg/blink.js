@@ -4,18 +4,19 @@ var board = new Spark({
   deviceId: "YOUR TOKEN HERE"
 });
 
-
-board.on("ready", function(data) {
-  console.log("CONNECTED", data);
+board.on("ready", function() {
+  console.log("CONNECTED");
 
   var byte = 0;
 
+  this.pinMode("D7", this.MODES.OUTPUT);
+
   setInterval(function() {
-    console.log("message");
     this.digitalWrite("D7", (byte ^= 1));
-  }.bind(this), 500);
+  }.bind(this), 100);
 });
 
 board.on("error", function(error) {
   console.log(error);
 });
+

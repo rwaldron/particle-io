@@ -4,10 +4,15 @@ var Spark = require("../lib/spark");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
 
-// console.log(WeakMap);
+sinon.stub(Spark.Server, "create", function(spark, onCreated) {
+  onCreated();
+});
 
 function command(stub) {
   Spark.prototype.command.isTest = true;
+  if (Spark.prototype.command.stub.restore) {
+    Spark.prototype.command.stub.restore();
+  }
   sinon.stub(Spark.prototype.command, "stub", stub);
 }
 
@@ -31,13 +36,8 @@ exports["Spark"] = {
 
     this.spark = new Spark({
       token: "token",
-      deviceId: "deviceId",
-      stub: function() {
-
-      }
+      deviceId: "deviceId"
     });
-
-    this.command = sinon.spy(this.spark, "command");
 
     this.proto = {};
 
@@ -183,105 +183,125 @@ exports["Spark"] = {
 
       this.clock = sinon.useFakeTimers();
 
+      var state = {
+        isConnected: true,
+        deviceId: "deviceId",
+        token: "token",
+        service: "service",
+        port: 9000,
+        server: {},
+        socket: {
+          write: function() {}
+        },
+        timers: {},
+        interval: 20
+      };
+
+      this.map = sinon.stub(Map.prototype, "get").returns(state);
+
+      this.socketwrite = sinon.spy(state.socket, "write");
+
+
+      command(function(received) {
+        received.handler(null, {
+          connected: true
+        });
+      });
+
       this.spark = new Spark({
         token: "token",
         deviceId: "deviceId"
       });
-
-      this.command = sinon.spy(this.spark, "command");
 
       done();
     },
     tearDown: function(done) {
       command.reset();
 
+      this.map.restore();
+      this.socketwrite.restore();
       this.clock.restore();
+
       done();
     }
   };
 
   // *Read Tests
   if (/read/.test(action)) {
-    exports[entry].command = function(test) {
-      test.expect(2);
+    // exports[entry].command = function(test) {
+    //   test.expect(2);
 
-      var handler = function(value) {
-        test.equal(value, 1);
-        test.done();
-      };
+    //   var handler = function(value) {
+    //     test.equal(value, 1);
+    //     test.done();
+    //   };
 
-      command(function(received) {
+    //   command(function(received) {
 
-        test.deepEqual(received, {
-          action: action,
-          handler: handler,
-          method: "post",
-          pin: "A0",
-          value: undefined,
-          outbound: {
-            access_token: "token",
-            params: "A0"
-          }
-        });
+    //     test.deepEqual(received, {
+    //       action: action,
+    //       handler: handler,
+    //       method: "post",
+    //       pin: "A0",
+    //       value: undefined,
+    //       outbound: {
+    //         access_token: "token",
+    //         params: "A0"
+    //       }
+    //     });
 
-        received.handler(1);
-      });
+    //     received.handler(1);
+    //   });
 
-      this.spark[fn]("A0", handler);
+    //   this.spark[fn]("A0", handler);
 
-      this.clock.tick(100);
-    };
+    //   this.clock.tick(100);
+    // };
 
-    exports[entry].interval = function(test) {
-      test.expect(1);
+    // exports[entry].interval = function(test) {
+    //   test.expect(1);
 
-      var calls = 0;
+    //   var calls = 0;
 
-      command(function(received) {
-        received.handler();
-      });
+    //   command(function(received) {
+    //     received.handler();
+    //   });
 
 
-      this.spark[fn]("A0", function() {
-        calls++;
+    //   this.spark[fn]("A0", function() {
+    //     calls++;
 
-        if (calls === 5) {
-          test.ok(true);
-          test.done();
-        }
-      });
+    //     if (calls === 5) {
+    //       test.ok(true);
+    //       test.done();
+    //     }
+    //   });
 
-      this.clock.tick(100);
-    };
+    //   this.clock.tick(100);
+    // };
   } else {
 
     // *Write Tests
-    var index = action === "analogwrite" ? 8 : 0;
+    var index = action === "analogwrite" ? 10 : 0;
     var pin = action === "analogwrite" ? "A0" : "D0";
-    var value = action === "analogwrite" ? 255 : "HIGH";
+    var value = action === "analogwrite" ? 255 : 1;
+    var sent = action === "analogwrite" ? [2, 10, 255]: [1, 0, 1];
 
 
-    exports[entry].command = function(test) {
-      test.expect(1);
-
-      command(function(received) {
-        test.deepEqual(received, {
-          action: action,
-          handler: undefined,
-          method: "post",
-          // analogwrite ? "A0" : "D0"
-          pin: pin,
-          // analogwrite ? 4095 : "HIGH"
-          value: value,
-          outbound: {
-            access_token: "token",
-            params: [pin, value].join()
-          }
-        });
-        test.done();
-      });
+    exports[entry].write = function(test) {
+      test.expect(4);
 
       this.spark[fn](pin, value);
+
+      test.ok(this.socketwrite.calledOnce);
+
+      var buffer = this.socketwrite.args[0][0];
+
+      for (var i = 0; i < sent.length; i++) {
+        test.equal(sent[i], buffer.readUInt8(i));
+      }
+
+      test.done();
     };
 
     exports[entry].stored = function(test) {
@@ -317,17 +337,81 @@ exports["Spark.prototype.servoWrite"] = {
 
 exports["Spark.prototype.pinMode"] = {
   setUp: function(done) {
+
+    this.clock = sinon.useFakeTimers();
+
+    var state = {
+      isConnected: true,
+      deviceId: "deviceId",
+      token: "token",
+      service: "service",
+      port: 9000,
+      server: {},
+      socket: {
+        write: function() {}
+      },
+      timers: {},
+      interval: 20
+    };
+
+    this.map = sinon.stub(Map.prototype, "get").returns(state);
+
+    this.socketwrite = sinon.spy(state.socket, "write");
+
+    command(function(received) {
+      received.handler(null, {
+        connected: true
+      });
+    });
+
+    this.spark = new Spark({
+      token: "token",
+      deviceId: "deviceId"
+    });
+
     done();
   },
   tearDown: function(done) {
+    command.reset();
+
+    this.map.restore();
+    this.socketwrite.restore();
+    this.clock.restore();
+
     done();
   },
-  alias: function(test) {
-    test.expect(1);
-    test.equal(
-      Spark.prototype.servoWrite,
-      Spark.prototype.analogWrite
-    );
+  analog: function(test) {
+    test.expect(4);
+
+    var sent = [0, 11, 1];
+
+    this.spark.pinMode("A1", 1);
+
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  digital: function(test) {
+    test.expect(4);
+
+    var sent = [0, 0, 1];
+
+    this.spark.pinMode("D0", 1);
+
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
     test.done();
   }
 };
