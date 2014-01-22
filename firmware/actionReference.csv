@@ -1,0 +1,5 @@
+0x00,pinMode
+0x01,digitalWrite
+0x02,analogWrite
+0x03,digitalRead
+0x04,analogRead

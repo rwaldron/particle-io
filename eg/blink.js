@@ -1,7 +1,7 @@
 var Spark = require("../lib/spark");
 var board = new Spark({
-  token: "{{yours}}",
-  deviceId: "{{yours}}"
+  token: "YOUR TOKEN HERE",
+  deviceId: "YOUR TOKEN HERE"
 });
 
 
