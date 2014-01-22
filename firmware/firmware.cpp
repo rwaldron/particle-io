@@ -15,7 +15,6 @@ int connectToMyServer(String params) {
   int colonIndex = params.indexOf(":");
   String ip = params.substring(0, colonIndex);
   String port = params.substring(colonIndex+1, params.length());
-  Serial.println("Connecting to Server at "+ip+":"+port);
 
   byte serverAddress[4];
   ipArrayFromString(serverAddress, ip);
@@ -30,7 +29,6 @@ int connectToMyServer(String params) {
 void setup() {
   Spark.function("connect", connectToMyServer);
 
-  Serial.begin(9600);
 
 }
 
