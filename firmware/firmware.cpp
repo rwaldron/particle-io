@@ -68,12 +68,16 @@ void loop() {
         // digitalRead
         int pin = client.read();
         int val = digitalRead(pin);
-        client.write(pin+":"+val);
+        client.write(0x03);
+        client.write(pin);
+        client.write(val);
       } else if (action == 0x04) {
         // analogRead
         int pin = client.read();
         int val = analogRead(pin);
-        client.write(pin+":"+val);
+        client.write(0x04);
+        client.write(pin);
+        client.write(val);
       }
     }
   }
