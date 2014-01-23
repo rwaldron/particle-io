@@ -53,7 +53,7 @@ void loop() {
       if(DEBUG)
         Serial.println("Action received: "+('0'+action));
       char charVal;
-      int pin, mode, val, type, speed;
+      int pin, mode, val, type, speed, address, stop;
       switch (action) {
         case 0x00:  // pinMode
           pin = client.read();
@@ -219,18 +219,50 @@ void loop() {
 
 
         // Wire API
-        case 0x30:
-          Wire.begin();
+        case 0x30:  // Wire.begin
+          address = client.read();
+          if (address == 0) {
+            Wire.begin();
+          } else {
+            Wire.begin(address);
+          }
           break;
-        case 0x21:  // SPI.end
-          SPI.end();
+        case 0x31:  // Wire.requestFrom
+          address = client.read();
+          int quantity = client.read();
+          stop = client.read();
+
+          Wire.requestFrom(address, quantity, stop);
           break;
-        case 0x22:  // SPI.setBitOrder
-          type = client.read();
-          SPI.setBitOrder((type ? MSBFIRST : LSBFIRST));
+        case 0x32:  // Wire.beginTransmission
+          address = client.read();
+          Wire.beginTransmission(address);
           break;
-          val = client.read();
-          SPI.transfer(val);
+        case 0x33:  // Wire.endTransmission
+          stop = client.read();
+          val = Wire.endTransmission(stop);
+          client.write(0x33);
+          client.write(val);
+          break;
+        case 0x34:  // Wire.write
+          len = client.read();
+          char wireData[len];
+          for (i = 0; i< len; i++) {
+            wireData[i] = client.read();
+          }
+          val = Wire.write(data, len);
+          client.write(0x34);
+          client.write(val);
+          break;
+        case 0x35:  // Wire.available
+          val = Wire.available();
+          client.write(0x35);
+          client.write(val);
+          break;
+        case 0x36:  // Wire.read
+          val = Wire.read();
+          client.write(0x36);
+          client.write(val);
           break;
 
 
