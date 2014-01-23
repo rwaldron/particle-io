@@ -52,47 +52,51 @@ void loop() {
       int action = client.read();
       if(DEBUG)
         Serial.println("Action received: "+('0'+action));
-
+      char charVal;
       int pin, mode, val, type, speed;
       switch (action) {
         case 0x00:  // pinMode
-           pin = client.read();
-           mode = client.read();
+          pin = client.read();
+          mode = client.read();
+          //mode is modeled after Standard Firmata
           if (mode == 0x00) {
             pinMode(pin, INPUT);
-          } else if (mode == 0x01) {
-            pinMode(pin, INPUT_PULLUP);
           } else if (mode == 0x02) {
-            pinMode(pin, INPUT_PULLDOWN);
+            pinMode(pin, INPUT_PULLUP);
           } else if (mode == 0x03) {
+            pinMode(pin, INPUT_PULLDOWN);
+          } else if (mode == 0x01) {
             pinMode(pin, OUTPUT);
           }
           break;
         case 0x01:  // digitalWrite
-           pin = client.read();
-           val = client.read();
+          pin = client.read();
+          val = client.read();
           digitalWrite(pin, val);
           break;
         case 0x02:  // analogWrite
-           pin = client.read();
-           val = client.read();
+          pin = client.read();
+          val = client.read();
           analogWrite(pin, val);
           break;
         case 0x03:  // digitalRead
-           pin = client.read();
-           val = digitalRead(pin);
+          pin = client.read();
+          val = digitalRead(pin);
           client.write(0x03);
           client.write(pin);
           client.write(val);
           break;
         case 0x04:  // analogRead
-           pin = client.read();
-           val = analogRead(pin);
+          pin = client.read();
+          val = analogRead(pin);
           client.write(0x04);
           client.write(pin);
           client.write(val);
           break;
-        case 0x05:  // serial.begin
+
+
+        // Serial API
+        case 0x10:  // serial.begin
            type = client.read();
            speed = client.read();
           if (type == 0) {
@@ -101,7 +105,7 @@ void loop() {
             Serial1.begin(SerialSpeed[speed]);
           }
           break;
-        case 0x06:  // serial.end
+        case 0x12:  // serial.end
           type = client.read();
           if (type == 0) {
             Serial.end();
@@ -109,7 +113,7 @@ void loop() {
             Serial1.end();
           }
           break;
-        case 0x07:  // serial.peek
+        case 0x13:  // serial.peek
           type = client.read();
           if (type == 0) {
             val = Serial.peek();
@@ -120,7 +124,93 @@ void loop() {
           client.write(type);
           client.write(val);
           break;
+        case 0x14:  // serial.available()
+          type = client.read();
+          if (type == 0) {
+            val = Serial.available();
+          } else {
+            val = Serial1.available();
+          }
+          client.write(0x07);
+          client.write(type);
+          client.write(val);
+          break;
+        case 0x15:  // serial.write
+          type = client.read();
+          len = client.read();
+          while (i = 0; i < len; i++) {
+            if (type ==0) {
+              Serial.write(client.read());
+            } else {
+              Serial1.write(client.read());
+            }
+          }
+          break;
+        case 0x16: // serial.read
+          type = client.read();
+          if (type == 0) {
+            val = Serial.read();
+          } else {
+            val = Serial1.read();
+          }
+          client.write(0x16);
+          client.write(type);
+          client.write(val);
+          break;
+        case 0x17: // serial.flush
+          type = client.read();
+          if (type == 0) {
+            Serial.flush();
+          } else {
+            Serial1.flush();
+          }
+          break;
 
+
+        // SPI API
+        case 0x20:  // SPI.begin
+          SPI.begin();
+          break;
+        case 0x21:  // SPI.end
+          SPI.end();
+          break;
+        case 0x22:  // SPI.setBitOrder
+          type = client.read();
+          SPI.setBitOrder((type ? MSBFIRST : LSBFIRST));
+          break;
+        case 0x22:  // SPI.setClockDivider
+          val = client.read();
+          if (val == 0) {
+            SPI.setClockDivider(SPI_CLOCK_DIV2);
+          } else if (val == 1) {
+            SPI.setClockDivider(SPI_CLOCK_DIV4);
+          } else if (val == 2) {
+            SPI.setClockDivider(SPI_CLOCK_DIV8);
+          } else if (val == 3) {
+            SPI.setClockDivider(SPI_CLOCK_DIV16);
+          } else if (val == 4) {
+            SPI.setClockDivider(SPI_CLOCK_DIV32);
+          } else if (val == 5) {
+            SPI.setClockDivider(SPI_CLOCK_DIV64);
+          } else if (val == 6) {
+            SPI.setClockDivider(SPI_CLOCK_DIV128);
+          } else if (val == 7) {
+            SPI.setClockDivider(SPI_CLOCK_DIV256);
+          }
+          break;
+
+        case 0x23:  // SPI.setDataMode
+          val = client.read();
+          if (val == 0) {
+            SPI.setDataMode(SPI_MODE0);
+          } else if (val == 1) {
+            SPI.setDataMode(SPI_MODE1);
+          } else if (val == 2) {
+            SPI.setDataMode(SPI_MODE2);
+          } else if (val == 3) {
+            SPI.setDataMode(SPI_MODE3);
+          }
+          break;
         default:
           break;
       }
