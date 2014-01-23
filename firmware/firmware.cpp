@@ -214,7 +214,9 @@ void loop() {
 
         case 0x24:  // SPI.transfer
           val = client.read();
-          SPI.transfer(val);
+          val = SPI.transfer(val);
+          client.write(0x24);
+          client.write(val);
           break;
 
 
