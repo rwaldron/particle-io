@@ -211,7 +211,36 @@ void loop() {
             SPI.setDataMode(SPI_MODE3);
           }
           break;
-        default:
+
+        case 0x24:  // SPI.transfer
+          val = client.read();
+          SPI.transfer(val);
+          break;
+
+
+        // Wire API
+        case 0x30:
+          Wire.begin();
+          break;
+        case 0x21:  // SPI.end
+          SPI.end();
+          break;
+        case 0x22:  // SPI.setBitOrder
+          type = client.read();
+          SPI.setBitOrder((type ? MSBFIRST : LSBFIRST));
+          break;
+          val = client.read();
+          SPI.transfer(val);
+          break;
+
+
+
+
+
+
+
+
+        default: // noop
           break;
       }
     }
