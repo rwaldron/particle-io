@@ -57,12 +57,16 @@ void send(int action, int pin, int value) {
 void report() {
   for (int i = 0; i < 20; i++) {
     if (reading[i]) {
-      if (i < 10) {
-        // Digital pins are 0-9
+      if (i < 10 && (reading[i] & 1)) {
         send(0x03, i, digitalRead(i));
       } else {
-        // Analog pins are 10-?
-        send(0x04, i, analogRead(i));
+        if (reading[i] & 1) {
+          send(0x03, i, digitalRead(i));
+        } else {
+          if (reading[i] & 2) {
+            send(0x04, i, analogRead(i));
+          }
+        }
       }
     }
   }
