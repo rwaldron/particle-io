@@ -1,6 +1,19 @@
 # Spark-io
 
-Spark-io is a Firmata-compatibility IO class for writing node programs that interact with [Spark devices](http://docs.spark.io/) that have the default [Tinker Firmware](http://docs.spark.io/#/start/tinkering-with-tinker-the-tinker-api) installed.
+Spark-io is a Firmata-compatibility IO class for writing node programs that interact with [Spark devices](http://docs.spark.io/).
+
+### Getting Started
+
+With your Spark device connected to the correct Wifi network:
+
+1. Open the [Spark.io Editor](https://www.spark.io/build). (Be sure to "claim" your Spark core device).
+2. Copy and paste the entire contents of `firmware/voodoospark.cpp` into the editor window.
+3. Click "Verify"
+4. Click "Flash"
+
+Once the flashing process is complete, close the Spark.io Editor.
+
+### Usage
 
 This module can be used a substitute IO layer with [Johnny-Five](https://github.com/rwaldron/johnny-five).
 
