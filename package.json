@@ -7,7 +7,9 @@
     "name": "Rick Waldron <waldron.rick@gmail.com>",
     "email": "waldron.rick@gmail.com"
   },
-  "contributors": [],
+  "contributors": [
+    { "name": "Chris Williams", "email": "<chris@iterativedesigns.com>" }
+  ],
   "keywords": [],
   "repository": {
     "type": "git",
