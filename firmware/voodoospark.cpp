@@ -1,9 +1,47 @@
-#define DEBUG 1
+/**
+  ******************************************************************************
+  * @file    voodoospark.cpp
+  * @author  Chris Williams
+  * @version V1.0.0
+  * @date    24-January-2014
+  * @brief   Exposes the firmware level API through a TCP Connection intiated
+  *          via the spark cloud service
+  ******************************************************************************
+  Copyright (c) 2014 Chris Williams  All rights reserved.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation
+  files (the "Software"), to deal in the Software without
+  restriction, including without limitation the rights to use,
+  copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following
+  conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
+  ******************************************************************************
+  */
+
+#define DEBUG 0
 TCPClient client;
 
 
 byte reading[20];
 byte previous[20];
+
+
+Servo servos[20];
+
 
 long SerialSpeed[] = {  600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200 };
 
@@ -147,6 +185,7 @@ void loop() {
         Serial.println("Action received: "+('0'+action));
 
       int pin, mode, val;
+
 
       // These are used in the commented code below there are warnings there that need to be resolved
       // otherwise spark.io will not compile and flash
@@ -368,6 +407,49 @@ void loop() {
           client.write(0x36);
           client.write(val);
           break;
+
+
+        case 0x40:
+          pin = client.read();
+          servos[pin].attach(pin);
+          break;
+
+        case 0x41:
+          pin = client.read();
+          val = client.read();
+          servos[pin].write(val);
+          break;
+
+        case 0x42:
+          pin = client.read();
+          val = client.read();
+          servos[pin].writeMicroseconds(val);
+          break;
+
+
+        case 0x43:
+          pin = client.read();
+          val = servos[pin].read();
+          client.write(0x42);
+          client.write(pin);
+          client.write(val);
+
+          break;
+
+
+        case 0x44:
+          pin = client.read();
+          val = servos[pin].attached();
+          client.write(0x44);
+          client.write(pin);
+          client.write(val);
+          break;
+
+        case 0x45:
+          pin = client.read();
+          servos[pin].detach();
+          break;
+
 
         default: // noop
           break;
