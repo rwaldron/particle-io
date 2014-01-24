@@ -181,61 +181,6 @@ void loop() {
           reading[pin] = val;
           break;
 
-      if(DEBUG)
-        Serial.println("Action received: "+('0'+action));
-
-      int pin, mode, val;
-
-
-      // These are used in the commented code below there are warnings there that need to be resolved
-      // otherwise spark.io will not compile and flash
-      // int type, speed, len, i;
-
-      switch (action) {
-        case 0x00:  // pinMode
-          pin = client.read();
-          mode = client.read();
-          //mode is modeled after Standard Firmata
-          if (mode == 0x00) {
-            pinMode(pin, INPUT);
-          } else if (mode == 0x02) {
-            pinMode(pin, INPUT_PULLUP);
-          } else if (mode == 0x03) {
-            pinMode(pin, INPUT_PULLDOWN);
-          } else if (mode == 0x01) {
-            pinMode(pin, OUTPUT);
-          }
-          break;
-        case 0x01:  // digitalWrite
-          pin = client.read();
-          val = client.read();
-          digitalWrite(pin, val);
-          break;
-        case 0x02:  // analogWrite
-          pin = client.read();
-          val = client.read();
-          analogWrite(pin, val);
-          break;
-        case 0x03:  // digitalRead
-          pin = client.read();
-          val = digitalRead(pin);
-          client.write(0x03);
-          client.write(pin);
-          client.write(val);
-          break;
-        case 0x04:  // analogRead
-          pin = client.read();
-          val = analogRead(pin);
-          client.write(0x04);
-          client.write(pin);
-          client.write(val);
-          break;
-        case 0x05:
-          pin = client.read();
-          val = client.read();
-          reading[pin] = val;
-          break;
-
         // Serial API
         case 0x10:  // serial.begin
            type = client.read();
@@ -413,30 +358,23 @@ void loop() {
           pin = client.read();
           servos[pin].attach(pin);
           break;
-
         case 0x41:
           pin = client.read();
           val = client.read();
           servos[pin].write(val);
           break;
-
         case 0x42:
           pin = client.read();
           val = client.read();
           servos[pin].writeMicroseconds(val);
           break;
-
-
         case 0x43:
           pin = client.read();
           val = servos[pin].read();
-          client.write(0x42);
+          client.write(0x43);
           client.write(pin);
           client.write(val);
-
           break;
-
-
         case 0x44:
           pin = client.read();
           val = servos[pin].attached();
@@ -444,7 +382,6 @@ void loop() {
           client.write(pin);
           client.write(val);
           break;
-
         case 0x45:
           pin = client.read();
           servos[pin].detach();
@@ -453,8 +390,8 @@ void loop() {
 
         default: // noop
           break;
-        }
-      }
+
+      } // <-- This is the end of the switch
     }
   }
 }
