@@ -49,34 +49,32 @@ void setup() {
 
 
 
+void send(int action, int pin, int value) {
+  if (previous[pin] != value) {
+    client.write(action);
+    client.write(pin);
+    client.write(value);
+  }
+  previous[pin] = value;
+}
 
 void report() {
   for (int i = 0; i < 20; i++) {
     if (reading[i]) {
-      int dr = (reading[i] & 1);
-      int ar = (reading[i] & 2);
-
-      if (i < 10 && dr) {
-        // Digital pins are 0-9 and can only do digital read
-        client.write(0x03);
-        client.write(i);
-        client.write(digitalRead(i));
+      if (i < 10 && (reading[i] & 1)) {
+        send(0x03, i, digitalRead(i));
       } else {
-        if (dr) {
-          client.write(0x03);
-          client.write(i);
-          client.write(digitalRead(i));
-        }
-        if (ar) {
-          client.write(0x04);
-          client.write(i);
-          client.write(analogRead(i));
+        if (reading[i] & 1) {
+          send(0x03, i, digitalRead(i));
+        } else {
+          if (reading[i] & 2) {
+            send(0x04, i, analogRead(i));
+          }
         }
       }
     }
   }
 }
-
 
 void loop() {
   report();
