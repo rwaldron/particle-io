@@ -85,14 +85,14 @@ void loop() {
       // parse and execute commands
 
       int action = client.read();
+
       if(DEBUG)
         Serial.println("Action received: "+('0'+action));
 
       int pin, mode, val;
 
-      // These are used in the commented code below
-      // —> there are warnings there that need to be resolved
-      // otherwise spark.io won't compile and flash
+      // These are used in the commented code below there are warnings there that need to be resolved
+      // otherwise spark.io will not compile and flash
       // int type, speed, len, i;
 
       switch (action) {

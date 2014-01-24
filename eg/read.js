@@ -7,16 +7,7 @@ var board = new Spark({
 board.on("ready", function() {
   console.log("CONNECTED");
 
-  var byte = 0;
-
-  this.pinMode("D7", this.MODES.OUTPUT);
-
-  setInterval(function() {
-    this.digitalWrite("D7", (byte ^= 1));
-  }.bind(this), 500);
+  this.digitalRead("D7", function(data) {
+    console.log( data );
+  });
 });
-
-board.on("error", function(error) {
-  console.log(error);
-});
-
