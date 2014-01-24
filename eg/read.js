@@ -7,7 +7,8 @@ var board = new Spark({
 board.on("ready", function() {
   console.log("CONNECTED");
 
-  this.digitalRead("D7", function(data) {
-    console.log( data );
+  this.analogRead("A0", function(data) {
+    console.log( "A0",  data );
   });
+
 });

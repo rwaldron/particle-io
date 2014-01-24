@@ -4,46 +4,39 @@ var Spark = require("../lib/spark");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
 
+
+function State() {
+  this.isConnected = false;
+  this.isReading = false;
+  this.deviceId = "deviceId";
+  this.token = "token";
+  this.service = "service";
+  this.port = 9000;
+  this.server = {};
+  this.socket = new Emitter();
+  this.socket.write = function() {};
+}
+
 sinon.stub(Spark.Server, "create", function(spark, onCreated) {
   process.nextTick(onCreated);
 });
-
-// function command(stub) {
-//   Spark.prototype.command.isTest = true;
-//   if (Spark.prototype.command.stub.restore) {
-//     Spark.prototype.command.stub.restore();
-//   }
-//   sinon.stub(Spark.prototype.command, "stub", stub);
-// }
-
-// command.reset = function() {
-//   if (Spark.prototype.command.isTest) {
-//     Spark.prototype.command.isTest = false;
-//     Spark.prototype.command.stub.restore();
-//   }
-// };
 
 exports["Spark"] = {
   setUp: function(done) {
 
     this.clock = sinon.useFakeTimers();
-    // Spark.prototype.command = function() {};
 
-    this.command = sinon.stub(Spark.prototype, "command", function(opts) {
-      opts.handler(null);
+    this.state = new State();
+    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+    this.socketwrite = sinon.spy(this.state.socket, "write");
+    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+      handler(null);
     });
 
     this.spark = new Spark({
       token: "token",
       deviceId: "deviceId"
     });
-
-    // command(function(received) {
-    //   received.handler.call(this.spark, null, {
-    //     connected: true
-    //   });
-    // });
-
 
     this.proto = {};
 
@@ -58,7 +51,7 @@ exports["Spark"] = {
     }, {
       name: "servoWrite"
     }, {
-      name: "command"
+      name: "connect"
     }];
 
     this.proto.objects = [{
@@ -80,7 +73,9 @@ exports["Spark"] = {
     done();
   },
   tearDown: function(done) {
-    this.command.restore();
+    this.connect.restore();
+    this.map.restore();
+    this.socketwrite.restore();
     this.clock.restore();
     done();
   },
@@ -153,7 +148,6 @@ exports["Spark"] = {
 
     this.spark.on("ready", function() {
       test.ok(true);
-      console.log( "message" );
       test.done();
     });
   }
@@ -167,36 +161,25 @@ exports["Spark"] = {
 ].forEach(function(fn) {
   var entry = "Spark.prototype." + fn;
   var action = fn.toLowerCase();
+  var isAnalog = action === "analogwrite" || action === "analogread";
+
+  var index = isAnalog ? 10 : 0;
+  var pin = isAnalog ? "A0" : "D0";
+  var value = isAnalog ? 255 : 1;
+  var sent = isAnalog ? [2, 10, 255] : [1, 0, 1];
+  var receiving = new Buffer(isAnalog ? [4, 10, 4095] : [3, 0, 1]);
 
   exports[entry] = {
     setUp: function(done) {
 
       this.clock = sinon.useFakeTimers();
 
-      var state = {
-        isConnected: true,
-        deviceId: "deviceId",
-        token: "token",
-        service: "service",
-        port: 9000,
-        server: {},
-        socket: {
-          write: function() {}
-        },
-        timers: {},
-        interval: 20
-      };
-
-      this.map = sinon.stub(Map.prototype, "get").returns(state);
-
-      this.socketwrite = sinon.spy(state.socket, "write");
-
-
-      // command(function(received) {
-      //   received.handler(null, {
-      //     connected: true
-      //   });
-      // });
+      this.state = new State();
+      this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+      this.socketwrite = sinon.spy(this.state.socket, "write");
+      this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+        handler(null);
+      });
 
       this.spark = new Spark({
         token: "token",
@@ -206,8 +189,7 @@ exports["Spark"] = {
       done();
     },
     tearDown: function(done) {
-      // command.reset();
-
+      this.connect.restore();
       this.map.restore();
       this.socketwrite.restore();
       this.clock.restore();
@@ -218,42 +200,28 @@ exports["Spark"] = {
 
   // *Read Tests
   if (/read/.test(action)) {
-    // exports[entry].command = function(test) {
-    //   test.expect(2);
 
-    //   var handler = function(value) {
-    //     test.equal(value, 1);
-    //     test.done();
-    //   };
+    exports[entry].data = function(test) {
+      test.expect(1);
 
-    //   command(function(received) {
+      var handler = function(value) {
+        test.equal(value, receiving[2]);
+        test.done();
+      };
 
-    //     test.deepEqual(received, {
-    //       action: action,
-    //       handler: handler,
-    //       method: "post",
-    //       pin: "A0",
-    //       value: undefined,
-    //       outbound: {
-    //         access_token: "token",
-    //         params: "A0"
-    //       }
-    //     });
+      this.spark[fn](pin, handler);
 
-    //     received.handler(1);
-    //   });
+      this.state.socket.emit("data", receiving);
 
-    //   this.spark[fn]("A0", handler);
-
-    //   this.clock.tick(100);
-    // };
+      // this.clock.tick(100);
+    };
 
     // exports[entry].interval = function(test) {
     //   test.expect(1);
 
     //   var calls = 0;
 
-    //   command(function(received) {
+    //   connect(function(received) {
     //     received.handler();
     //   });
 
@@ -272,10 +240,6 @@ exports["Spark"] = {
   } else {
 
     // *Write Tests
-    var index = action === "analogwrite" ? 10 : 0;
-    var pin = action === "analogwrite" ? "A0" : "D0";
-    var value = action === "analogwrite" ? 255 : 1;
-    var sent = action === "analogwrite" ? [2, 10, 255]: [1, 0, 1];
 
 
     exports[entry].write = function(test) {
@@ -329,30 +293,12 @@ exports["Spark.prototype.pinMode"] = {
   setUp: function(done) {
 
     this.clock = sinon.useFakeTimers();
-
-    var state = {
-      isConnected: true,
-      deviceId: "deviceId",
-      token: "token",
-      service: "service",
-      port: 9000,
-      server: {},
-      socket: {
-        write: function() {}
-      },
-      timers: {},
-      interval: 20
-    };
-
-    this.map = sinon.stub(Map.prototype, "get").returns(state);
-
-    this.socketwrite = sinon.spy(state.socket, "write");
-
-    // command(function(received) {
-    //   received.handler(null, {
-    //     connected: true
-    //   });
-    // });
+    this.state = new State();
+    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+    this.socketwrite = sinon.spy(this.state.socket, "write");
+    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+      handler(null);
+    });
 
     this.spark = new Spark({
       token: "token",
@@ -362,8 +308,7 @@ exports["Spark.prototype.pinMode"] = {
     done();
   },
   tearDown: function(done) {
-    // command.reset();
-
+    this.connect.restore();
     this.map.restore();
     this.socketwrite.restore();
     this.clock.restore();
@@ -380,7 +325,6 @@ exports["Spark.prototype.pinMode"] = {
     test.ok(this.socketwrite.calledOnce);
 
     var buffer = this.socketwrite.args[0][0];
-
 
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
