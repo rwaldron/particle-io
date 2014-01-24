@@ -63,13 +63,16 @@ void send(int action, int pin, int value) {
 void report() {
   for (int i = 0; i < 20; i++) {
     if (reading[i]) {
-      if (i < 10 && (reading[i] & 1)) {
+      int dr = (reading[i] & 1);
+      int ar = (reading[i] & 2);
+
+      if (i < 10 && dr) {
         send(0x03, i, digitalRead(i));
       } else {
-        if (reading[i] & 1) {
+        if (dr) {
           send(0x03, i, digitalRead(i));
         } else {
-          if (reading[i] & 2) {
+          if (ar) {
             send(0x04, i, analogRead(i));
           }
         }
