@@ -1,10 +1,15 @@
 #define DEBUG 1
 TCPClient client;
 
-int reading[20];
+int DEBUG=1;
 
+byte reading[20];
+byte previous[20];
 
-long SerialSpeed[] = {600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200};
+long SerialSpeed[] = {
+  600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200
+};
+
 
 void ipArrayFromString(byte ipArray[], String ipString) {
   int dot1 = ipString.indexOf('.');
@@ -39,6 +44,32 @@ int connectToMyServer(String params) {
   }
 }
 
+void send(int action, int pin, int value) {
+
+  if (previous[pin] != value) {
+    client.write(action);
+    client.write(pin);
+    client.write(value);
+  }
+
+  previous[pin] = value;
+}
+
+void report() {
+  for (int i = 0; i < 20; i++) {
+    if (reading[i]) {
+      if (i < 10) {
+        // Digital pins are 0-9
+        send(0x03, i, digitalRead(i));
+      } else {
+        // Analog pins are 10-?
+        send(0x04, i, analogRead(i));
+      }
+    }
+  }
+}
+
+
 void setup() {
   Spark.function("connect", connectToMyServer);
   if (DEBUG)
@@ -51,7 +82,6 @@ void setup() {
 void report() {
   for (int i = 0; i < 20; i++) {
     if (reading[i]) {
-
       int dr = (reading[i] & 1);
       int ar = (reading[i] & 2);
 
@@ -76,8 +106,8 @@ void report() {
   }
 }
 
-void loop() {
 
+void loop() {
   report();
 
   if (client.connected()) {
@@ -133,6 +163,59 @@ void loop() {
           reading[pin] = val;
           break;
 
+      if(DEBUG)
+        Serial.println("Action received: "+('0'+action));
+
+      int pin, mode, val;
+
+      // These are used in the commented code below there are warnings there that need to be resolved
+      // otherwise spark.io will not compile and flash
+      // int type, speed, len, i;
+
+      switch (action) {
+        case 0x00:  // pinMode
+          pin = client.read();
+          mode = client.read();
+          //mode is modeled after Standard Firmata
+          if (mode == 0x00) {
+            pinMode(pin, INPUT);
+          } else if (mode == 0x02) {
+            pinMode(pin, INPUT_PULLUP);
+          } else if (mode == 0x03) {
+            pinMode(pin, INPUT_PULLDOWN);
+          } else if (mode == 0x01) {
+            pinMode(pin, OUTPUT);
+          }
+          break;
+        case 0x01:  // digitalWrite
+          pin = client.read();
+          val = client.read();
+          digitalWrite(pin, val);
+          break;
+        case 0x02:  // analogWrite
+          pin = client.read();
+          val = client.read();
+          analogWrite(pin, val);
+          break;
+        case 0x03:  // digitalRead
+          pin = client.read();
+          val = digitalRead(pin);
+          client.write(0x03);
+          client.write(pin);
+          client.write(val);
+          break;
+        case 0x04:  // analogRead
+          pin = client.read();
+          val = analogRead(pin);
+          client.write(0x04);
+          client.write(pin);
+          client.write(val);
+          break;
+        case 0x05:
+          pin = client.read();
+          val = client.read();
+          reading[pin] = val;
+          break;
 
         // Serial API
         case 0x10:  // serial.begin
