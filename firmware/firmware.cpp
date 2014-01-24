@@ -1,7 +1,7 @@
-int DEBUG=1;
+#define DEBUG 1
 TCPClient client;
 
-bool reading[20];
+int reading[20];
 
 
 long SerialSpeed[] = {600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200};
@@ -41,26 +41,32 @@ int connectToMyServer(String params) {
 
 void setup() {
   Spark.function("connect", connectToMyServer);
-  if(DEBUG)
+  if (DEBUG)
     Serial.begin(115200);
 }
 
 
+
+
 void report() {
-  int action = 0x03;
   for (int i = 0; i < 20; i++) {
     if (reading[i]) {
-      if (i < 10 && (reading[i] & 1)) {
+
+      int dr = (reading[i] & 1);
+      int ar = (reading[i] & 2);
+
+      if (i < 10 && dr) {
         // Digital pins are 0-9 and can only do digital read
         client.write(0x03);
         client.write(i);
         client.write(digitalRead(i));
       } else {
-        if (reading[i] & 1) {
+        if (dr) {
           client.write(0x03);
           client.write(i);
           client.write(digitalRead(i));
-        } else if (reading[i] & 2) {
+        }
+        if (ar) {
           client.write(0x04);
           client.write(i);
           client.write(analogRead(i));
@@ -69,7 +75,6 @@ void report() {
     }
   }
 }
-
 
 void loop() {
 
@@ -82,8 +87,7 @@ void loop() {
       int action = client.read();
       if(DEBUG)
         Serial.println("Action received: "+('0'+action));
-      char charVal;
-      int pin, mode, val, type, speed, address, stop;
+      int pin, mode, val, type, speed, address, stop, len, i;
       switch (action) {
         case 0x00:  // pinMode
           pin = client.read();
@@ -140,7 +144,7 @@ void loop() {
             Serial1.begin(SerialSpeed[speed]);
           }
           break;
-        case 0x12:  // serial.end
+        case 0x11:  // serial.end
           type = client.read();
           if (type == 0) {
             Serial.end();
@@ -148,7 +152,7 @@ void loop() {
             Serial1.end();
           }
           break;
-        case 0x13:  // serial.peek
+        case 0x12:  // serial.peek
           type = client.read();
           if (type == 0) {
             val = Serial.peek();
@@ -159,7 +163,7 @@ void loop() {
           client.write(type);
           client.write(val);
           break;
-        case 0x14:  // serial.available()
+        case 0x13:  // serial.available()
           type = client.read();
           if (type == 0) {
             val = Serial.available();
@@ -170,10 +174,10 @@ void loop() {
           client.write(type);
           client.write(val);
           break;
-        case 0x15:  // serial.write
+        case 0x14:  // serial.write
           type = client.read();
           len = client.read();
-          while (i = 0; i < len; i++) {
+          for (i = 0; i < len; i++) {
             if (type ==0) {
               Serial.write(client.read());
             } else {
@@ -181,7 +185,7 @@ void loop() {
             }
           }
           break;
-        case 0x16: // serial.read
+        case 0x15: // serial.read
           type = client.read();
           if (type == 0) {
             val = Serial.read();
@@ -192,7 +196,7 @@ void loop() {
           client.write(type);
           client.write(val);
           break;
-        case 0x17: // serial.flush
+        case 0x16: // serial.flush
           type = client.read();
           if (type == 0) {
             Serial.flush();
@@ -213,7 +217,7 @@ void loop() {
           type = client.read();
           SPI.setBitOrder((type ? MSBFIRST : LSBFIRST));
           break;
-        case 0x22:  // SPI.setClockDivider
+        case 0x23:  // SPI.setClockDivider
           val = client.read();
           if (val == 0) {
             SPI.setClockDivider(SPI_CLOCK_DIV2);
@@ -234,7 +238,7 @@ void loop() {
           }
           break;
 
-        case 0x23:  // SPI.setDataMode
+        case 0x24:  // SPI.setDataMode
           val = client.read();
           if (val == 0) {
             SPI.setDataMode(SPI_MODE0);
@@ -247,7 +251,7 @@ void loop() {
           }
           break;
 
-        case 0x24:  // SPI.transfer
+        case 0x25:  // SPI.transfer
           val = client.read();
           val = SPI.transfer(val);
           client.write(0x24);
