@@ -1,7 +1,9 @@
 int DEBUG=1;
-
-
 TCPClient client;
+
+bool reading[20];
+
+
 long SerialSpeed[] = {600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200};
 
 void ipArrayFromString(byte ipArray[], String ipString) {
@@ -41,10 +43,38 @@ void setup() {
   Spark.function("connect", connectToMyServer);
   if(DEBUG)
     Serial.begin(115200);
-
 }
 
+
+void report() {
+  int action = 0x03;
+  for (int i = 0; i < 20; i++) {
+    if (reading[i]) {
+      if (i < 10 && (reading[i] & 1)) {
+        // Digital pins are 0-9 and can only do digital read
+        client.write(0x03);
+        client.write(i);
+        client.write(digitalRead(i));
+      } else {
+        if (reading[i] & 1) {
+          client.write(0x03);
+          client.write(i);
+          client.write(digitalRead(i));
+        } else if (reading[i] & 2) {
+          client.write(0x04);
+          client.write(i);
+          client.write(analogRead(i));
+        }
+      }
+    }
+  }
+}
+
+
 void loop() {
+
+  report();
+
   if (client.connected()) {
     if (client.available()) {
       // parse and execute commands
@@ -92,6 +122,11 @@ void loop() {
           client.write(0x04);
           client.write(pin);
           client.write(val);
+          break;
+        case 0x05: // set always send bit
+          pin = client.read();
+          val = client.read();
+          reading[pin] = val;
           break;
 
 
