@@ -10,7 +10,9 @@
   "contributors": [
     { "name": "Chris Williams", "email": "<chris@iterativedesigns.com>" }
   ],
-  "keywords": [],
+  "keywords": [
+    "spark", "io", "arduino", "firmata", "johnny-five"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/rwaldron/spark-io.git"
