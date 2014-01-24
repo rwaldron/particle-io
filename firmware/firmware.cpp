@@ -32,6 +32,9 @@ int connectToMyServer(String params) {
   ipArrayFromString(serverAddress, ip);
   int serverPort = port.toInt();
   if (client.connect(serverAddress, serverPort)) {
+
+    reset();
+
     if (DEBUG)
       Serial.println("Connected to server: "+ip+":"+port);
     return 1; // successfully connected
@@ -43,14 +46,19 @@ int connectToMyServer(String params) {
   }
 }
 
-void send(int action, int pin, int value) {
+void reset() {
+  for (int i = 0; i < 20; i++) {
+    reading[i] = 0;
+    previous[i] = 0;
+  }
+}
 
+void send(int action, int pin, int value) {
   if (previous[pin] != value) {
     client.write(action);
     client.write(pin);
     client.write(value);
   }
-
   previous[pin] = value;
 }
 
@@ -71,7 +79,6 @@ void report() {
     }
   }
 }
-
 
 void setup() {
   Spark.function("connect", connectToMyServer);
@@ -125,9 +132,11 @@ void loop() {
           analogWrite(pin, val);
           break;
         case 0x03:  // digitalRead
-        case 0x04:  // analogRead
           pin = client.read();
           reading[pin] = 1;
+        case 0x04:  // analogRead
+          pin = client.read();
+          reading[pin] = 2;
           break;
 
 
