@@ -165,9 +165,8 @@ exports["Spark"] = {
 
   var index = isAnalog ? 10 : 0;
   var pin = isAnalog ? "A0" : "D0";
-  var value = isAnalog ? 255 : 1;
-  var sent = isAnalog ? [2, 10, 255] : [1, 0, 1];
   var receiving = new Buffer(isAnalog ? [4, 10, 4095] : [3, 0, 1]);
+  var sent, value;
 
   exports[entry] = {
     setUp: function(done) {
@@ -200,48 +199,33 @@ exports["Spark"] = {
 
   // *Read Tests
   if (/read/.test(action)) {
+    value = isAnalog ? 1024 : 1;
+    sent = isAnalog ?
+      [5, 10, 2] : // continuous, analog 0, analog
+      [5, 0, 1];   // continuous, digital 0, digital
 
     exports[entry].data = function(test) {
-      test.expect(1);
+      test.expect(4);
 
-      var handler = function(value) {
-        test.equal(value, receiving[2]);
+      var handler = function(data) {
+        test.equal(data, value);
         test.done();
       };
 
       this.spark[fn](pin, handler);
 
+      var buffer = this.socketwrite.args[0][0];
+
+      for (var i = 0; i < sent.length; i++) {
+        test.equal(sent[i], buffer.readUInt8(i));
+      }
+
       this.state.socket.emit("data", receiving);
-
-      // this.clock.tick(100);
     };
-
-    // exports[entry].interval = function(test) {
-    //   test.expect(1);
-
-    //   var calls = 0;
-
-    //   connect(function(received) {
-    //     received.handler();
-    //   });
-
-
-    //   this.spark[fn]("A0", function() {
-    //     calls++;
-
-    //     if (calls === 5) {
-    //       test.ok(true);
-    //       test.done();
-    //     }
-    //   });
-
-    //   this.clock.tick(100);
-    // };
   } else {
-
     // *Write Tests
-
-
+    value = isAnalog ? 255 : 1;
+    sent = isAnalog ? [2, 10, 255] : [1, 0, 1];
     exports[entry].write = function(test) {
       test.expect(4);
 
