@@ -1,14 +1,11 @@
 #define DEBUG 1
 TCPClient client;
 
-int DEBUG=1;
 
 byte reading[20];
 byte previous[20];
 
-long SerialSpeed[] = {
-  600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200
-};
+long SerialSpeed[] = {  600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200 };
 
 
 void ipArrayFromString(byte ipArray[], String ipString) {
@@ -43,32 +40,6 @@ int connectToMyServer(String params) {
     return -1; // failed to connect
   }
 }
-
-void send(int action, int pin, int value) {
-
-  if (previous[pin] != value) {
-    client.write(action);
-    client.write(pin);
-    client.write(value);
-  }
-
-  previous[pin] = value;
-}
-
-void report() {
-  for (int i = 0; i < 20; i++) {
-    if (reading[i]) {
-      if (i < 10) {
-        // Digital pins are 0-9
-        send(0x03, i, digitalRead(i));
-      } else {
-        // Analog pins are 10-?
-        send(0x04, i, analogRead(i));
-      }
-    }
-  }
-}
-
 
 void setup() {
   Spark.function("connect", connectToMyServer);
@@ -353,10 +324,10 @@ void loop() {
           break;
         case 0x31:  // Wire.requestFrom
           address = client.read();
-          int quantity = client.read();
+          val = client.read();
           stop = client.read();
 
-          Wire.requestFrom(address, quantity, stop);
+          Wire.requestFrom(address, val, stop);
           break;
         case 0x32:  // Wire.beginTransmission
           address = client.read();
@@ -370,11 +341,11 @@ void loop() {
           break;
         case 0x34:  // Wire.write
           len = client.read();
-          char wireData[len];
+          uint8_t wireData[len];
           for (i = 0; i< len; i++) {
             wireData[i] = client.read();
           }
-          val = Wire.write(data, len);
+          val = Wire.write(wireData, len);
           client.write(0x34);
           client.write(val);
           break;
@@ -398,6 +369,7 @@ void loop() {
 
         default: // noop
           break;
+        }
       }
     }
   }
