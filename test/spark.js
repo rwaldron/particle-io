@@ -18,6 +18,9 @@ function State() {
 }
 
 sinon.stub(Spark.Server, "create", function(spark, onCreated) {
+  process.nextTick(function() {
+    spark.emit("ready");
+  });
   process.nextTick(onCreated);
 });
 
@@ -142,6 +145,14 @@ exports["Spark"] = {
     test.expect(1);
     test.ok(this.spark instanceof Emitter);
     test.done();
+  },
+  connected: function(test) {
+    test.expect(1);
+
+    this.spark.on("connected", function() {
+      test.ok(true);
+      test.done();
+    });
   },
   ready: function(test) {
     test.expect(1);
