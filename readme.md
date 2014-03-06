@@ -15,10 +15,6 @@ With your Spark device connected to the correct Wifi network:
 
 Once the flashing process is complete, close the Spark.io Editor.
 
-### Usage
-
-This module can be used a substitute IO layer with [Johnny-Five](https://github.com/rwaldron/johnny-five).
-
 ### Blink an Led
 
 The "Hello World" of microcontroller programming:
@@ -41,6 +37,27 @@ board.on("ready", function(data) {
   }.bind(this), 500);
 });
 ```
+
+### Johnny-Five IO Plugin
+
+Spark-IO can be used as an [IO Plugin](https://github.com/rwaldron/johnny-five/wiki/IO-Plugins) for [Johnny-Five](https://github.com/rwaldron/johnny-five):
+
+```js
+var five = require("johnny-five");
+var Spark = require("spark-io");
+var board = new five.Board({
+  io: new Spark({
+    token: "{{yours}}",
+    deviceId: "{{yours}}"
+  })
+});
+
+board.on("ready", function() {
+  var led = new five.Led("D7");
+  led.blink();
+});
+```
+
 
 ### API
 
