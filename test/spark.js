@@ -149,7 +149,7 @@ exports["Spark"] = {
   connected: function(test) {
     test.expect(1);
 
-    this.spark.on("connected", function() {
+    this.spark.on("connect", function() {
       test.ok(true);
       test.done();
     });
