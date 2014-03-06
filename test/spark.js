@@ -177,7 +177,7 @@ exports["Spark"] = {
   var index = isAnalog ? 10 : 0;
   var pin = isAnalog ? "A0" : "D0";
   var receiving = new Buffer(isAnalog ? [4, 10, 4095] : [3, 0, 1]);
-  var sent, value;
+  var sent, value, type;
 
   exports[entry] = {
     setUp: function(done) {
@@ -210,6 +210,7 @@ exports["Spark"] = {
 
   // *Read Tests
   if (/read/.test(action)) {
+    type = isAnalog ? "analog" : "digital";
     value = isAnalog ? 1024 : 1;
     sent = isAnalog ?
       [5, 10, 2] : // continuous, analog 0, analog
@@ -233,6 +234,36 @@ exports["Spark"] = {
 
       this.state.socket.emit("data", receiving);
     };
+
+
+    exports[entry].handler = function(test) {
+      test.expect(1);
+
+      var handler = function(data) {
+        test.equal(data, value);
+        test.done();
+      };
+
+      this.spark[fn](pin, handler);
+      this.state.socket.emit("data", receiving);
+    };
+
+    exports[entry].event = function(test) {
+      test.expect(1);
+
+      var event = type + "-read-" + pin;
+
+      this.spark.once(event, function(data) {
+        test.equal(data, value);
+        test.done();
+      });
+
+      var handler = function(data) {};
+
+      this.spark[fn](pin, handler);
+      this.state.socket.emit("data", receiving);
+    };
+
   } else {
     // *Write Tests
     value = isAnalog ? 255 : 1;
