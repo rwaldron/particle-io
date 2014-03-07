@@ -235,7 +235,6 @@ exports["Spark"] = {
       this.state.socket.emit("data", receiving);
     };
 
-
     exports[entry].handler = function(test) {
       test.expect(1);
 
@@ -284,6 +283,22 @@ exports["Spark"] = {
 
       this.state.socket.emit("data", receiving);
     };
+
+
+    if (isAnalog) {
+      exports[entry].analogPin = function(test) {
+
+        test.expect(1);
+
+        var handler = function(data) {
+          test.equal(data, value);
+          test.done();
+        };
+
+        this.spark.analogRead(0, handler);
+        this.state.socket.emit("data", receiving);
+      };
+    }
 
   } else {
     // *Write Tests
