@@ -362,12 +362,59 @@ exports["Spark.prototype.pinMode"] = {
 
     done();
   },
-  analog: function(test) {
+  analogOutput: function(test) {
     test.expect(4);
 
     var sent = [0, 11, 1];
 
     this.spark.pinMode("A1", 1);
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  analogInput: function(test) {
+    test.expect(4);
+
+    var sent = [0, 11, 0];
+
+    this.spark.pinMode("A1", 0);
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
+  analogInputMapped: function(test) {
+    test.expect(4);
+
+    var sent = [0, 11, 0];
+
+    this.spark.pinMode(1, 2);
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
+  digitalOutput: function(test) {
+    test.expect(4);
+
+    var sent = [0, 0, 1];
+
+    this.spark.pinMode("D0", 1);
 
     test.ok(this.socketwrite.calledOnce);
 
@@ -378,7 +425,8 @@ exports["Spark.prototype.pinMode"] = {
     }
     test.done();
   },
-  digital: function(test) {
+
+  digitalInput: function(test) {
     test.expect(4);
 
     var sent = [0, 0, 1];
