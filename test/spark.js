@@ -165,10 +165,10 @@ exports["Spark"] = {
 };
 
 [
-  'analogWrite',
-  'digitalWrite',
-  'analogRead',
-  'digitalRead'
+  "analogWrite",
+  "digitalWrite",
+  "analogRead",
+  "digitalRead"
 ].forEach(function(fn) {
   var entry = "Spark.prototype." + fn;
   var action = fn.toLowerCase();
@@ -176,7 +176,7 @@ exports["Spark"] = {
 
   var index = isAnalog ? 10 : 0;
   var pin = isAnalog ? "A0" : "D0";
-  var receiving = new Buffer(isAnalog ? [4, 10, 4095] : [3, 0, 1]);
+  var receiving = new Buffer(isAnalog ? [4, 10, 255] : [3, 0, 1]);
   var sent, value, type;
 
   exports[entry] = {
@@ -261,6 +261,27 @@ exports["Spark"] = {
       var handler = function(data) {};
 
       this.spark[fn](pin, handler);
+      this.state.socket.emit("data", receiving);
+    };
+
+    exports[entry].valIsInteger = function(test) {
+      test.expect(1);
+
+      var event = type + "-read-" + pin;
+      var value = isAnalog ? 1019 : 1;
+      var receiving = new Buffer(isAnalog ? [4, 10, 254] : [3, 0, 1]);
+
+      // The value 254 will produce the float 1019.9843137254902
+      // ensure that values like this don't exist.
+      this.spark.once(event, function(data) {
+        test.equal(data, value);
+        test.done();
+      });
+
+      var handler = function(data) {};
+
+      this.spark[fn](pin, handler);
+
       this.state.socket.emit("data", receiving);
     };
 
@@ -367,7 +388,6 @@ exports["Spark.prototype.pinMode"] = {
     test.ok(this.socketwrite.calledOnce);
 
     var buffer = this.socketwrite.args[0][0];
-
 
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
