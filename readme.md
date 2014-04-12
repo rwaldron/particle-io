@@ -9,7 +9,7 @@ Spark-io is a Firmata-compatibility IO class for writing node programs that inte
 With your Spark device connected to the correct Wifi network:
 
 1. Open the [Spark.io Editor](https://www.spark.io/build). (Be sure to "claim" your Spark core device).
-2. Copy and paste the entire contents of `firmware/voodoospark.cpp` into the editor window.
+2. Copy and paste the entire contents of the [voodoospark firmware](https://github.com/voodootikigod/voodoospark) into the editor window.
 3. Click "Verify"
 4. Click "Flash"
 
@@ -133,4 +133,3 @@ board.analogRead("A1", function(data) {
 
 ## License
 See LICENSE file.
-
