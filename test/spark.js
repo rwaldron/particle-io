@@ -4,7 +4,7 @@ var Spark = require("../lib/spark");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
 
-
+var SparkAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
 function State() {
   this.isConnected = false;
   this.isReading = false;
