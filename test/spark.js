@@ -4,7 +4,7 @@ var Spark = require("../lib/spark");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
 
-
+var SparkAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
 function State() {
   this.isConnected = false;
   this.isReading = false;
@@ -17,7 +17,7 @@ function State() {
   this.socket.write = function() {};
 }
 
-sinon.stub(Spark.Server, "create", function(spark, onCreated) {
+sinon.stub(Spark.Client, "create", function(spark, onCreated) {
   process.nextTick(function() {
     spark.emit("ready");
   });
@@ -33,7 +33,7 @@ exports["Spark"] = {
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
     this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
-      handler(null);
+      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
     this.spark = new Spark({
@@ -188,7 +188,7 @@ exports["Spark"] = {
       this.map = sinon.stub(Map.prototype, "get").returns(this.state);
       this.socketwrite = sinon.spy(this.state.socket, "write");
       this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
-        handler(null);
+        handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
       });
 
       this.spark = new Spark({
@@ -359,7 +359,7 @@ exports["Spark.prototype.pinMode"] = {
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
     this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
-      handler(null);
+      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
     this.spark = new Spark({
