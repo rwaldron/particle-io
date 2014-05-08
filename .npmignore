@@ -1,2 +1,4 @@
 node_modules/
 *.csv
+eg/read.local.js
+eg/write.local.js
