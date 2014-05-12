@@ -24,7 +24,7 @@ var board = new Spark({
 
 board.on("ready", function() {
   console.log("CONNECTED");
-  this.pinMode("D7", 1);
+  this.pinMode("D7", this.MODES.OUTPUT);
 
   var byte = 0;
 
