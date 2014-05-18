@@ -1,7 +1,7 @@
 {
   "name": "spark-io",
   "description": "Spark Core IO",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "https://github.com/rwaldron/spark-io",
   "author": {
     "name": "Rick Waldron <waldron.rick@gmail.com>",
