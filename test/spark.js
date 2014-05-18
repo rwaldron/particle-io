@@ -3,8 +3,8 @@
 var Spark = require("../lib/spark");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
-
 var SparkAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
+
 function State() {
   this.isConnected = false;
   this.isReading = false;
@@ -335,11 +335,73 @@ exports["Spark"] = {
 
 exports["Spark.prototype.servoWrite"] = {
   setUp: function(done) {
+    this.clock = sinon.useFakeTimers();
+
+    this.state = new State();
+    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+    this.socketwrite = sinon.spy(this.state.socket, "write");
+    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
+    });
+
+    this.spark = new Spark({
+      token: "token",
+      deviceId: "deviceId"
+    });
+
     done();
   },
   tearDown: function(done) {
+    this.connect.restore();
+    this.map.restore();
+    this.socketwrite.restore();
+    this.clock.restore();
     done();
   },
+  analogWriteToDigital: function(test) {
+    test.expect(3);
+
+    var sent = [2, 0, 180];
+
+    this.spark.analogWrite("D0", 180);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  analogWriteToAnalog: function(test) {
+    test.expect(3);
+
+    var sent = [2, 10, 255];
+
+    this.spark.analogWrite("A0", 255);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
+  servoWrite: function(test) {
+    test.expect(3);
+
+    var sent = [2, 0, 180];
+
+    this.spark.servoWrite("D0", 180);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
   alias: function(test) {
     test.expect(1);
     test.equal(
@@ -349,6 +411,7 @@ exports["Spark.prototype.servoWrite"] = {
     test.done();
   }
 };
+
 
 
 exports["Spark.prototype.pinMode"] = {
@@ -444,9 +507,26 @@ exports["Spark.prototype.pinMode"] = {
   digitalInput: function(test) {
     test.expect(4);
 
+    var sent = [0, 0, 0];
+
+    this.spark.pinMode("D0", 0);
+
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
+  servoCoercedToOutput: function(test) {
+    test.expect(4);
+
     var sent = [0, 0, 1];
 
-    this.spark.pinMode("D0", 1);
+    this.spark.pinMode("D0", 4);
 
     test.ok(this.socketwrite.calledOnce);
 
