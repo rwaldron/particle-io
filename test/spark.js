@@ -390,9 +390,7 @@ exports["Spark.prototype.servoWrite"] = {
   servoWrite: function(test) {
     test.expect(3);
 
-    // servoWrite expects a value 0-180
-    // this value is then scaled to an 8 bit value
-    var sent = [2, 0, 255];
+    var sent = [2, 0, 180];
 
     this.spark.servoWrite("D0", 180);
 
@@ -401,6 +399,15 @@ exports["Spark.prototype.servoWrite"] = {
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
     }
+    test.done();
+  },
+
+  alias: function(test) {
+    test.expect(1);
+    test.equal(
+      Spark.prototype.servoWrite,
+      Spark.prototype.analogWrite
+    );
     test.done();
   }
 };
