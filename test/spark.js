@@ -536,5 +536,23 @@ exports["Spark.prototype.pinMode"] = {
       test.equal(sent[i], buffer.readUInt8(i));
     }
     test.done();
+  },
+
+  pwmCoercedToOutput: function(test) {
+    test.expect(4);
+
+    var sent = [0, 0, 1];
+
+    this.spark.pinMode("D0", 3);
+
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
   }
+
 };
