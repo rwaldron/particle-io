@@ -544,10 +544,25 @@ exports["Spark.prototype.pinMode"] = {
     test.done();
   },
 
-  pwm: function(test) {
-    test.expect(10);
+  pwmCoercedToOutput: function(test) {
+    test.expect(4);
 
     var sent = [0, 0, 1];
+
+    this.spark.pinMode("D0", 3);
+
+    test.ok(this.socketwrite.calledOnce);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+
+  pwmError: function(test) {
+    test.expect(12);
 
     try {
       this.spark.pinMode("D0", 3);
@@ -555,8 +570,7 @@ exports["Spark.prototype.pinMode"] = {
       this.spark.pinMode("A0", 3);
       this.spark.pinMode("A1", 3);
       this.spark.pinMode("A5", 3);
-      this.spark.pinMode("A6", 3);
-      this.spark.pinMode("A7", 3);
+
 
       test.ok(true);
     } catch(e) {
@@ -626,24 +640,114 @@ exports["Spark.prototype.pinMode"] = {
       test.ok(true);
     }
 
+    try {
+      this.spark.pinMode("A6", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A7", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
     test.done();
   },
 
-  pwmCoercedToOutput: function(test) {
-    test.expect(4);
+  servoError: function(test) {
+    test.expect(12);
 
-    var sent = [0, 0, 1];
+    try {
+      this.spark.pinMode("D0", 4);
+      this.spark.pinMode("D1", 4);
+      this.spark.pinMode("A0", 4);
+      this.spark.pinMode("A1", 4);
+      this.spark.pinMode("A5", 4);
 
-    this.spark.pinMode("D0", 3);
+      test.ok(true);
+    } catch(e) {
+      test.ok(false);
+    }
 
-    test.ok(this.socketwrite.calledOnce);
+    try {
+      this.spark.pinMode("D2", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
 
-    var buffer = this.socketwrite.args[0][0];
+    try {
+      this.spark.pinMode("D3", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
 
-    for (var i = 0; i < sent.length; i++) {
-      test.equal(sent[i], buffer.readUInt8(i));
+    try {
+      this.spark.pinMode("D4", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D5", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D6", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D7", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A2", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A3", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A4", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A6", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A7", 4);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
     }
     test.done();
   }
-
 };
