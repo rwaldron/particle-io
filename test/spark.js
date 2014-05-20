@@ -527,10 +527,10 @@ exports["Spark.prototype.pinMode"] = {
     test.done();
   },
 
-  servoCoercedToOutput: function(test) {
+  servo: function(test) {
     test.expect(4);
 
-    var sent = [0, 0, 1];
+    var sent = [0, 0, 4];
 
     this.spark.pinMode("D0", 4);
 
@@ -541,6 +541,91 @@ exports["Spark.prototype.pinMode"] = {
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
     }
+    test.done();
+  },
+
+  pwm: function(test) {
+    test.expect(10);
+
+    var sent = [0, 0, 1];
+
+    try {
+      this.spark.pinMode("D0", 3);
+      this.spark.pinMode("D1", 3);
+      this.spark.pinMode("A0", 3);
+      this.spark.pinMode("A1", 3);
+      this.spark.pinMode("A5", 3);
+      this.spark.pinMode("A6", 3);
+      this.spark.pinMode("A7", 3);
+
+      test.ok(true);
+    } catch(e) {
+      test.ok(false);
+    }
+
+    try {
+      this.spark.pinMode("D2", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D3", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D4", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D5", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D6", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("D7", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A2", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A3", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
+    try {
+      this.spark.pinMode("A4", 3);
+      test.ok(false);
+    } catch(e) {
+      test.ok(true);
+    }
+
     test.done();
   },
 
