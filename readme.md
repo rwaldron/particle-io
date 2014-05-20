@@ -18,8 +18,8 @@ The "Hello World" of microcontroller programming:
 ```js
 var Spark = require("spark-io");
 var board = new Spark({
-  token: "{{yours}}",
-  deviceId: "{{yours}}"
+  token: process.env.SPARK_TOKEN,
+  deviceId: process.env.SPARK_DEVICE_ID
 });
 
 board.on("ready", function() {
@@ -44,8 +44,8 @@ var five = require("johnny-five");
 var Spark = require("spark-io");
 var board = new five.Board({
   io: new Spark({
-    token: "{{yours}}",
-    deviceId: "{{yours}}"
+    token: process.env.SPARK_TOKEN,
+    deviceId: process.env.SPARK_DEVICE_ID
   })
 });
 
