@@ -387,10 +387,10 @@ exports["Spark.prototype.servoWrite"] = {
     test.done();
   },
 
-  servoWrite: function(test) {
+  servoWriteDigital: function(test) {
     test.expect(3);
 
-    var sent = [2, 0, 180];
+    var sent = [0x41, 0, 180];
 
     this.spark.servoWrite("D0", 180);
 
@@ -402,12 +402,18 @@ exports["Spark.prototype.servoWrite"] = {
     test.done();
   },
 
-  alias: function(test) {
-    test.expect(1);
-    test.equal(
-      Spark.prototype.servoWrite,
-      Spark.prototype.analogWrite
-    );
+  servoWriteAnalog: function(test) {
+    test.expect(3);
+
+    var sent = [0x41, 10, 180];
+
+    this.spark.servoWrite("A0", 180);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
     test.done();
   }
 };
