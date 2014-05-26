@@ -8,8 +8,7 @@ Spark-io is a Firmata-compatibility IO class for writing node programs that inte
 
 In order to use the spark-io library, you will need to load the special
 [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your
-device. We recommend you review the [Getting Started](https://github.com/voodootikigod/voodoospark#getting-started)
-over there before continuing further.
+device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.
 
 ### Blink an Led
 
