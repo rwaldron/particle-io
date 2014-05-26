@@ -48,13 +48,15 @@ exports["Spark"] = {
     }, {
       name: "analogWrite"
     }, {
+      name: "connect"
+    }, {
       name: "digitalRead"
     }, {
       name: "digitalWrite"
     }, {
-      name: "servoWrite"
+      name: "pinMode"
     }, {
-      name: "connect"
+      name: "servoWrite"
     }];
 
     this.proto.objects = [{
