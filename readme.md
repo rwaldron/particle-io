@@ -132,7 +132,7 @@ board.analogRead("A1", function(data) {
 
 ### Notes
 
-- The Spark Core docs state that PWM is available on A0, A1, A4, A5, A6, A7, D0 and D1. A reality check of _my_ board shows that A0, A1, A5, D0, and D1 have PWM.
+- The Spark Core docs state that PWM is available on A0, A1, A4, A5, A6, A7, D0 and D1. These pins have now all been confirmed and are supported as of v0.4.0.
 
 ## License
 See LICENSE file.
