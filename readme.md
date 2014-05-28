@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/rwaldron/spark-io.png?branch=master)](https://travis-ci.org/rwaldron/spark-io)
 
-Spark-io is a Firmata-compatibility IO class for writing node programs that interact with [Spark devices](http://docs.spark.io/).
+Spark-io is a Firmata-compatibility IO class for writing node programs that interact with [Spark devices](http://docs.spark.io/). Spark-io was built at [Bocoup](http://bocoup.com/)
 
 ### Getting Started
 
