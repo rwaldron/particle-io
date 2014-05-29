@@ -10,7 +10,17 @@ In order to use the spark-io library, you will need to load the special
 [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your
 device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.
 
+We recommend storing the token and device id in a dot file containing these: 
+
+```bash
+export SPARK_TOKEN = "...your token..."
+export SPARK_DEVICE_ID = "...your device id..."
+```
+
+
+
 ### Blink an Led
+
 
 The "Hello World" of microcontroller programming:
 
