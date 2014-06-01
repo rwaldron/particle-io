@@ -178,7 +178,14 @@ exports["Spark"] = {
 
   var index = isAnalog ? 10 : 0;
   var pin = isAnalog ? "A0" : "D0";
-  var receiving = new Buffer(isAnalog ? [4, 10, 255] : [3, 0, 1]);
+  // All reporting messages are received as:
+  //
+  // [action, pin, lsb, msb]
+  //
+  // Where lsb and msb are 7-bit bytes that represent a single value
+  //
+  //
+  var receiving = new Buffer(isAnalog ? [4, 10, 127, 31] : [3, 0, 1, 0]);
   var sent, value, type;
 
   exports[entry] = {
@@ -213,7 +220,8 @@ exports["Spark"] = {
   // *Read Tests
   if (/read/.test(action)) {
     type = isAnalog ? "analog" : "digital";
-    value = isAnalog ? 1024 : 1;
+    value = isAnalog ? 1023 : 1;
+    // This triggers the "reporting" action to start
     sent = isAnalog ?
       [5, 10, 2] : // continuous, analog 0, analog
       [5, 0, 1];   // continuous, digital 0, digital
@@ -265,28 +273,6 @@ exports["Spark"] = {
       this.state.socket.emit("data", receiving);
     };
 
-    exports[entry].valIsInteger = function(test) {
-      test.expect(1);
-
-      var event = type + "-read-" + pin;
-      var value = isAnalog ? 1019 : 1;
-      var receiving = new Buffer(isAnalog ? [4, 10, 254] : [3, 0, 1]);
-
-      // The value 254 will produce the float 1019.9843137254902
-      // ensure that values like this don't exist.
-      this.spark.once(event, function(data) {
-        test.equal(data, value);
-        test.done();
-      });
-
-      var handler = function(data) {};
-
-      this.spark[fn](pin, handler);
-
-      this.state.socket.emit("data", receiving);
-    };
-
-
     if (isAnalog) {
       exports[entry].analogPin = function(test) {
 
@@ -297,6 +283,7 @@ exports["Spark"] = {
           test.done();
         };
 
+        // Analog read on pin 0 (zero), which is A0 or 10
         this.spark.analogRead(0, handler);
         this.state.socket.emit("data", receiving);
       };
