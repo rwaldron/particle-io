@@ -39,15 +39,15 @@ board.on("ready", function() {
       return;
     }
 
-    if ( key.name == 'r' ) {
+    if ( key.name === 'r' ) {
       a.color("#FF0000");
-    }else if ( key.name == 'g' ) {
+    }else if ( key.name === 'g' ) {
       a.color("#00FF00");
-    }else if ( key.name == 'b' ) {
+    }else if ( key.name === 'b' ) {
       a.color("#0000FF");
-    }else if ( key.name == 'w' ) {
+    }else if ( key.name === 'w' ) {
       a.color("#FFFFFF");
-    }else if ( key.name == 'o' ) {
+    }else if ( key.name === 'o' ) {
       a.color("#000000");
     }
 

@@ -27,24 +27,26 @@ board.on("ready", function() {
 
   process.stdin.on('keypress', function (ch, key) {
     
-    if ( !key ) return;
+    if ( !key ) {
+      return;
+    }
 
-    if ( key.name == 'q' ) {
+    if ( key.name === 'q' ) {
 
       console.log('Quitting');
       process.exit();
 
-    } else if ( key.name == 'up' ) {
+    } else if ( key.name === 'up' ) {
 
       console.log('CW');
       servo_pin.cw();
 
-    } else if ( key.name == 'down' ) {
+    } else if ( key.name === 'down' ) {
 
       console.log('CCW');
       servo_pin.ccw();
 
-    } else if ( key.name == 'space' ) {
+    } else if ( key.name === 'space' ) {
 
       console.log('Stopping');
       servo_pin.stop();
