@@ -16,8 +16,9 @@ board = new five.Board({
 // the board has reported that it is ready
 board.on("ready", function() {
   console.log("CONNECTED");
-  //var a = new five.Led.RGB(["A5","A6","A7"]);
 
+
+  // Initialize the RGB LED
   var a = new five.Led.RGB({
     pins: {
       red: "A5",
@@ -26,12 +27,31 @@ board.on("ready", function() {
     }
   });
 
+  // RGB LED alternate constructor
+  // This will normalize an array of pins in [r, g, b]
+  // order to an object (like above) that's shaped like:
+  // {
+  //   red: r,
+  //   green: g,
+  //   blue: b
+  // }
+  //var a = new five.Led.RGB(["A5","A6","A7"]);
+
+  // Turn it on and set the initial color
   a.on();
   a.color("#FF0000");
 
+  // Listen for user input to change the RGB color
   process.stdin.resume();
   process.stdin.setEncoding('utf8');
   process.stdin.setRawMode(true);
+
+  var keymap = {
+    r: "#FF0000", // red
+    g: "#00FF00", // green
+    b: "#0000FF", // blue
+    w: "#FFFFFF"  // white
+  };
 
   process.stdin.on('keypress', function (ch, key) {
     
@@ -39,16 +59,11 @@ board.on("ready", function() {
       return;
     }
 
-    if ( key.name === 'r' ) {
-      a.color("#FF0000");
-    }else if ( key.name === 'g' ) {
-      a.color("#00FF00");
-    }else if ( key.name === 'b' ) {
-      a.color("#0000FF");
-    }else if ( key.name === 'w' ) {
-      a.color("#FFFFFF");
-    }else if ( key.name === 'o' ) {
-      a.color("#000000");
+    if (keymap[key.name]) {
+      a.color(keymap[key.name]);
+      a.on();
+    } else {
+      a.off();
     }
 
   });

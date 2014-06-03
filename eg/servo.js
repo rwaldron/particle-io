@@ -17,9 +17,7 @@ board.on("ready", function() {
   console.log("CONNECTED");
 
   // Create a new `servo` hardware instance.
-  var servo  = new five.Servo({
-      pin  : "D0"
-  }).stop();
+  var servo  = new five.Servo("D0");
 
   temporal.queue([
     {

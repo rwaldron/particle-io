@@ -16,7 +16,7 @@ board.on("ready", function() {
 
   console.log("Let's test a simple servo. Use Up and Down arrows for CW and CCW respectively. Space to stop.");
 
-  var servo_pin  = new five.Servo({
+  var servo  = new five.Servo({
       pin  : "D0",
       type : 'continuous'
   }).stop();
@@ -39,17 +39,17 @@ board.on("ready", function() {
     } else if ( key.name === 'up' ) {
 
       console.log('CW');
-      servo_pin.cw();
+      servo.cw();
 
     } else if ( key.name === 'down' ) {
 
       console.log('CCW');
-      servo_pin.ccw();
+      servo.ccw();
 
     } else if ( key.name === 'space' ) {
 
       console.log('Stopping');
-      servo_pin.stop();
+      servo.stop();
 
     }
 

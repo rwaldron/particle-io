@@ -15,8 +15,7 @@ board = new five.Board({
 board.on("ready", function() {
   console.log("CONNECTED");
 
-  var val = 0;
-
+  // Once connected, we can do normal Johnny-Five stuff
   var led = new five.Led("D7");
 
   led.blink();
