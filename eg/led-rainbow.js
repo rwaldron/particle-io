@@ -13,7 +13,7 @@ board = new five.Board({
 });
 
 board.on("ready", function() {
-  var rbg, rainbow, index;
+  var rgb, rainbow, index;
 
 
   // Initialize the RGB LED
