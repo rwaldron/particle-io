@@ -1,5 +1,5 @@
-var five   = require("johnny-five"),
-  Spark    = require("../lib/spark"),
+var five = require("johnny-five"),
+  Spark = require("../lib/spark"),
   keypress = require("keypress"),
   board;
 
@@ -17,7 +17,7 @@ board.on("ready", function() {
 
 
   // Initialize the RGB LED
-  rgb = new five.Led.RGB(["A5","A6","A7"]);
+  rgb = new five.Led.RGB(["A5", "A6", "A7"]);
   rainbow = ["FF000", "FF7F00", "00FF00", "FFFF00", "0000FF", "4B0082", "8F00FF"];
   index = 0;
 

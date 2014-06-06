@@ -1,5 +1,5 @@
-var five   = require("johnny-five"),
-  Spark    = require("../lib/spark"),
+var five = require("johnny-five"),
+  Spark = require("../lib/spark"),
   keypress = require("keypress"),
   board;
 
@@ -21,9 +21,9 @@ board.on("ready", function() {
   // Initialize the RGB LED
   var led = new five.Led.RGB({
     pins: {
-      red:   "A5",
+      red: "A5",
       green: "A6",
-      blue:  "A7"
+      blue: "A7"
     }
   });
 
@@ -53,9 +53,9 @@ board.on("ready", function() {
     w: "#FFFFFF"  // white
   };
 
-  process.stdin.on("keypress", function (ch, key) {
-    
-    if ( !key ) {
+  process.stdin.on("keypress", function(ch, key) {
+
+    if (!key) {
       return;
     }
 
