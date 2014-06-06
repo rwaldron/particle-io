@@ -1,6 +1,6 @@
-var five = require("johnny-five"),
-  Spark = require("../lib/spark"),
-  keypress = require('keypress'),
+var five   = require("johnny-five"),
+  Spark    = require("../lib/spark"),
+  keypress = require("keypress"),
   board;
 
 
@@ -19,11 +19,11 @@ board.on("ready", function() {
 
 
   // Initialize the RGB LED
-  var a = new five.Led.RGB({
+  var led = new five.Led.RGB({
     pins: {
-      red: "A5",
+      red:   "A5",
       green: "A6",
-      blue: "A7"
+      blue:  "A7"
     }
   });
 
@@ -35,15 +35,15 @@ board.on("ready", function() {
   //   green: g,
   //   blue: b
   // }
-  //var a = new five.Led.RGB(["A5","A6","A7"]);
+  //var led = new five.Led.RGB(['A5','A6','A7']);
 
   // Turn it on and set the initial color
-  a.on();
-  a.color("#FF0000");
+  led.on();
+  led.color("#FF0000");
 
   // Listen for user input to change the RGB color
   process.stdin.resume();
-  process.stdin.setEncoding('utf8');
+  process.stdin.setEncoding("utf8");
   process.stdin.setRawMode(true);
 
   var keymap = {
@@ -53,17 +53,16 @@ board.on("ready", function() {
     w: "#FFFFFF"  // white
   };
 
-  process.stdin.on('keypress', function (ch, key) {
+  process.stdin.on("keypress", function (ch, key) {
     
     if ( !key ) {
       return;
     }
 
     if (keymap[key.name]) {
-      a.color(keymap[key.name]);
-      a.on();
+      led.color(keymap[key.name]);
     } else {
-      a.off();
+      led.off();
     }
 
   });
