@@ -205,5 +205,24 @@ board.on("ready", function() {
 
 - The Spark Core docs state that PWM is available on A0, A1, A4, A5, A6, A7, D0 and D1. These pins have now all been confirmed and are supported as of v0.4.0.
 
+### Spark Device Credentials
+
+To access your Spark Device credentials as properties of `process.env`, create a file in your home directory called `.sparkrc` that contains: 
+
+```sh
+export SPARK_TOKEN="your spark token"
+export SPARK_DEVICE_ID="your device id"
+```
+
+Then add the following to your dot-rc file of choice:
+
+```sh
+source ~/.sparkrc
+```
+
+
+
+
+
 ## License
 See LICENSE file.
