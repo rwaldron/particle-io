@@ -1,6 +1,6 @@
 var five = require("johnny-five"),
   Spark = require("../lib/spark"),
-  keypress = require('keypress'),
+  keypress = require("keypress"),
   board;
 
 
@@ -43,7 +43,7 @@ board.on("ready", function() {
 
   // Listen for user input to change the RGB color
   process.stdin.resume();
-  process.stdin.setEncoding('utf8');
+  process.stdin.setEncoding("utf8");
   process.stdin.setRawMode(true);
 
   var keymap = {
@@ -53,8 +53,8 @@ board.on("ready", function() {
     w: "#FFFFFF"  // white
   };
 
-  process.stdin.on('keypress', function (ch, key) {
-    
+  process.stdin.on("keypress", function (ch, key) {
+
     if ( !key ) {
       return;
     }
