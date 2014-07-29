@@ -47,7 +47,8 @@
     "grunt-jsbeautifier": "~0.2.2"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "prepublish": "echo \"Make sure you have the latest voodoospark installed!\""
   },
   "js-flags": "--harmony"
 }

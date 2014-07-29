@@ -220,7 +220,9 @@ Then add the following to your dot-rc file of choice:
 source ~/.sparkrc
 ```
 
+### Troubleshooting
 
+- Make sure you have installed the latest [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your device.
 
 
 
