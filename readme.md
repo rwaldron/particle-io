@@ -10,13 +10,18 @@ In order to use the spark-io library, you will need to load the special
 [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your
 device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.
 
-We recommend storing the token and device id in a dot file containing these: 
+We also recommend storing your Spark token and device ID in a dot file so they can be accessed as properties of `process.env`. Create a file in your home directory called `.sparkrc` that contains: 
 
-```bash
-export SPARK_TOKEN = "...your token..."
-export SPARK_DEVICE_ID = "...your device id..."
+```sh
+export SPARK_TOKEN="your spark token"
+export SPARK_DEVICE_ID="your device id"
 ```
 
+Then add the following to your dot-rc file of choice:
+
+```sh
+source ~/.sparkrc
+```
 
 
 ### Blink an Led
@@ -198,30 +203,6 @@ board.on("ready", function() {
 
 });
 ```
-
-
-
-### Notes
-
-- The Spark Core docs state that PWM is available on A0, A1, A4, A5, A6, A7, D0 and D1. These pins have now all been confirmed and are supported as of v0.4.0.
-
-### Spark Device Credentials
-
-To access your Spark Device credentials as properties of `process.env`, create a file in your home directory called `.sparkrc` that contains: 
-
-```sh
-export SPARK_TOKEN="your spark token"
-export SPARK_DEVICE_ID="your device id"
-```
-
-Then add the following to your dot-rc file of choice:
-
-```sh
-source ~/.sparkrc
-```
-
-
-
 
 
 ## License
