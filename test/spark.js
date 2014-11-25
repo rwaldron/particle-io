@@ -292,7 +292,7 @@ exports["Spark"] = {
   } else {
     // *Write Tests
     value = isAnalog ? 255 : 1;
-    sent = isAnalog ? [2, 10, 255] : [1, 0, 1];
+    sent = isAnalog ? [3, 10, 255] : [1, 0, 1];
     exports[entry].write = function(test) {
       test.expect(4);
 
@@ -350,7 +350,7 @@ exports["Spark.prototype.servoWrite"] = {
   analogWriteToDigital: function(test) {
     test.expect(3);
 
-    var sent = [2, 0, 180];
+    var sent = [3, 0, 180];
 
     this.spark.analogWrite("D0", 180);
 
@@ -364,7 +364,7 @@ exports["Spark.prototype.servoWrite"] = {
   analogWriteToAnalog: function(test) {
     test.expect(3);
 
-    var sent = [2, 10, 255];
+    var sent = [3, 10, 255];
 
     this.spark.analogWrite("A0", 255);
 
