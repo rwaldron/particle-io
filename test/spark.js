@@ -469,7 +469,7 @@ exports["Spark.prototype.pinMode"] = {
   analogInputMapped: function(test) {
     test.expect(4);
 
-    var sent = [0, 11, 0];
+    var sent = [0, 11, 2];
 
     this.spark.pinMode(1, 2);
     test.ok(this.socketwrite.calledOnce);
