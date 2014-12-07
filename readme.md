@@ -23,6 +23,7 @@ Then add the following to your dot-rc file of choice:
 source ~/.sparkrc
 ```
 
+Ensure your host computer (where you're running your Node.js application) and the Spark are on the same local network.
 
 ### Blink an Led
 
