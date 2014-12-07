@@ -87,9 +87,10 @@ board.MODES;
 - SERVO: 4
 
 
+
 **pinMode(pin, MODE)**
 
-> Set a pin's mode to any one of the MODES
+> Set a pin's mode to any one of the MODES. PWM is supported on A0, A1, A4, A5, A6, A7, D0 and D1.
 
 Example:
 ```js
