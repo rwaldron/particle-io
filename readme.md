@@ -23,6 +23,7 @@ Then add the following to your dot-rc file of choice:
 source ~/.sparkrc
 ```
 
+Ensure your host computer (where you're running your Node.js application) and the Spark are on the same local network.
 
 ### Blink an Led
 
@@ -87,9 +88,10 @@ board.MODES;
 - SERVO: 4
 
 
+
 **pinMode(pin, MODE)**
 
-> Set a pin's mode to any one of the MODES
+> Set a pin's mode to any one of the MODES. PWM is supported on A0, A1, A4, A5, A6, A7, D0 and D1.
 
 Example:
 ```js
