@@ -1,7 +1,7 @@
 {
   "name": "spark-io",
-  "description": "Spark Core IO",
-  "version": "0.6.0",
+  "description": "Spark Core IO Plugin for Johnny-Five",
+  "version": "0.6.1",
   "homepage": "https://github.com/rwaldron/spark-io",
   "author": {
     "name": "Rick Waldron <waldron.rick@gmail.com>",
