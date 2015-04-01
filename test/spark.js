@@ -877,5 +877,31 @@ exports["Spark.prototype.internalRGB"] = {
     });
 
     test.done();
+  },
+
+  setBadValues: function(test) {
+    test.expect(5);
+
+    test.throws(function() {
+      this.spark.internalRGB(null);
+    });
+
+    test.throws(function() {
+      this.spark.internalRGB("#fff");
+    });
+
+    test.throws(function() {
+      this.spark.internalRGB("#ggffff");
+    });
+
+    test.throws(function() {
+      this.spark.internalRGB(10, 20, null);
+    });
+
+    test.throws(function() {
+      this.spark.internalRGB([10, 20, null]);
+    });
+
+    test.done();
   }
 };
