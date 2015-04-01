@@ -882,7 +882,7 @@ exports["Spark.prototype.internalRGB"] = {
   setBadValues: function(test) {
     var spark = this.spark;
 
-    test.expect(8);
+    test.expect(12);
 
     // null
     test.throws(function() {
@@ -906,14 +906,19 @@ exports["Spark.prototype.internalRGB"] = {
     test.throws(function() {
       spark.internalRGB(10, 20);
     });
+    test.throws(function() {
+      spark.internalRGB(10, undefined, 30);
+    });
+
 
     // by array
     test.throws(function() {
-      console.log('by array');
       spark.internalRGB([10, 20, null]);
     });
     test.throws(function() {
-      console.log('by array');
+      spark.internalRGB([10, undefined, 30]);
+    });
+    test.throws(function() {
       spark.internalRGB([10, 20]);
     });
 
@@ -921,6 +926,13 @@ exports["Spark.prototype.internalRGB"] = {
     test.throws(function() {
       spark.internalRGB({red: 255, green: 100});
     });
+    test.throws(function() {
+      spark.internalRGB({red: 255, green: 100, blue: null});
+    });
+    test.throws(function() {
+      spark.internalRGB({red: 255, green: 100, blue: undefined});
+    });
+
 
     test.done();
   }
