@@ -101,4 +101,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jsbeautifier");
 
   grunt.registerTask("default", ["jshint", "nodeunit"]);
+  
+  // Explicit test task runs complete set of tests
+  grunt.registerTask("test", ["jshint", "nodeunit"]);
 };
