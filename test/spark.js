@@ -744,8 +744,15 @@ exports["Spark.prototype.internalRGB"] = {
     test.done();
   },
 
+  setReturnsThis: function(test) {
+    test.expect(1);
+
+    test.equal(this.spark.internalRGB(0, 0, 0), this.spark);
+    test.done();
+  },
+
   setWithThreeArgs: function(test) {
-    test.expect(5);
+    test.expect(6);
 
     this.spark.internalRGB(0, 0, 0);
 
@@ -758,7 +765,117 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 0, green: 0, blue: 0
+    });
+
+    test.done();
+  },
+
+  setWithArrayOfThreeBytes: function(test) {
+    test.expect(6);
+
+    this.spark.internalRGB([0, 0, 0]);
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 0);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 0);
+
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 0, green: 0, blue: 0
+    });
+
+    test.done();
+  },
+
+  setWithObjectContainingPropertiesRGB: function(test) {
+    test.expect(6);
+
+    this.spark.internalRGB({
+      red: 0, green: 0, blue: 0
+    });
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 0);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 0);
+
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 0, green: 0, blue: 0
+    });
+
+    test.done();
+  },
+
+  setWithHexString: function(test) {
+    test.expect(6);
+
+    this.spark.internalRGB("#000000");
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 0);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 0);
+
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 0, green: 0, blue: 0
+    });
+
+    test.done();
+  },
+
+  setWithHexStringNoPrefix: function(test) {
+    test.expect(6);
+
+    this.spark.internalRGB("000000");
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 0);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 0);
+
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 0, green: 0, blue: 0
+    });
+
+    test.done();
+  },
+
+  setConstrainsValues: function(test) {
+    test.expect(6);
+
+    this.spark.internalRGB(300, -1, 256);
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 255);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 255);
+
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 255, green: 0, blue: 255
+    });
+
     test.done();
   }
-
-}
+};
