@@ -5,6 +5,20 @@ var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
 var SparkAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
 
+
+function restore(target) {
+  for (var prop in target) {
+    if (target[prop] != null &&
+        typeof target[prop].restore === "function") {
+      target[prop].restore();
+    }
+    if (typeof target[prop] === "object") {
+      restore(target[prop]);
+    }
+  }
+}
+
+
 function State() {
   this.isConnected = false;
   this.isReading = false;
@@ -78,10 +92,7 @@ exports["Spark"] = {
     done();
   },
   tearDown: function(done) {
-    this.connect.restore();
-    this.map.restore();
-    this.socketwrite.restore();
-    this.clock.restore();
+    restore(this);
     done();
   },
   shape: function(test) {
@@ -208,11 +219,7 @@ exports["Spark"] = {
       done();
     },
     tearDown: function(done) {
-      this.connect.restore();
-      this.map.restore();
-      this.socketwrite.restore();
-      this.clock.restore();
-
+      restore(this);
       done();
     }
   };
@@ -341,10 +348,7 @@ exports["Spark.prototype.servoWrite"] = {
     done();
   },
   tearDown: function(done) {
-    this.connect.restore();
-    this.map.restore();
-    this.socketwrite.restore();
-    this.clock.restore();
+    restore(this);
     done();
   },
   analogWriteToDigital: function(test) {
@@ -428,11 +432,7 @@ exports["Spark.prototype.pinMode"] = {
     done();
   },
   tearDown: function(done) {
-    this.connect.restore();
-    this.map.restore();
-    this.socketwrite.restore();
-    this.clock.restore();
-
+    restore(this);
     done();
   },
   analogOutput: function(test) {
@@ -704,3 +704,53 @@ exports["Spark.prototype.pinMode"] = {
     test.done();
   }
 };
+
+exports["Spark.prototype.internalRGB"] = {
+  setUp: function(done) {
+
+    this.clock = sinon.useFakeTimers();
+    this.state = new State();
+    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+    this.socketwrite = sinon.spy(this.state.socket, "write");
+    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
+    });
+
+    this.spark = new Spark({
+      token: "token",
+      deviceId: "deviceId"
+    });
+
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+
+  get: function(test) {
+    test.expect(1);
+
+    test.equal(this.spark.internalRGB(), this.spark);
+
+    test.done();
+  },
+
+  setWithThreeArgs: function(test) {
+    test.expect(5);
+
+    this.spark.internalRGB(0, 0, 0);
+
+    test.ok(this.socketwrite.called);
+
+    var buffer = this.socketwrite.getCall(0).args[0];
+
+    test.equal(buffer.readUInt8(0), 0x07);
+    test.equal(buffer.readUInt8(1), 0);
+    test.equal(buffer.readUInt8(2), 0);
+    test.equal(buffer.readUInt8(3), 0);
+
+    test.done();
+  }
+
+}
