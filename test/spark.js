@@ -734,12 +734,17 @@ exports["Spark.prototype.internalRGB"] = {
   },
 
   get: function(test) {
-    test.expect(2);
+    test.expect(3);
 
     test.deepEqual(this.spark.internalRGB(), {
       red: null, green: null, blue: null
     });
     test.ok(this.socketwrite.notCalled);
+
+    this.spark.internalRGB(10, 20, 30);
+    test.deepEqual(this.spark.internalRGB(), {
+      red: 10, green: 20, blue: 30
+    });
 
     test.done();
   },
