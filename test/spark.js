@@ -880,30 +880,46 @@ exports["Spark.prototype.internalRGB"] = {
   },
 
   setBadValues: function(test) {
-    test.expect(6);
+    var spark = this.spark;
 
+    test.expect(8);
+
+    // null
     test.throws(function() {
-      this.spark.internalRGB(null);
+      spark.internalRGB(null);
     });
 
+    // shorthand not supported
     test.throws(function() {
-      this.spark.internalRGB("#fff");
+      spark.internalRGB("#fff");
     });
 
+    // bad hex
     test.throws(function() {
-      this.spark.internalRGB("#ggffff");
+      spark.internalRGB("#ggffff");
     });
 
+    // by params
     test.throws(function() {
-      this.spark.internalRGB(10, 20, null);
+      spark.internalRGB(10, 20, null);
+    });
+    test.throws(function() {
+      spark.internalRGB(10, 20);
     });
 
+    // by array
     test.throws(function() {
-      this.spark.internalRGB([10, 20, null]);
+      console.log('by array');
+      spark.internalRGB([10, 20, null]);
+    });
+    test.throws(function() {
+      console.log('by array');
+      spark.internalRGB([10, 20]);
     });
 
+    // by object
     test.throws(function() {
-      this.spark.internalRGB({red: 255, green: 100});
+      spark.internalRGB({red: 255, green: 100});
     });
 
     test.done();
