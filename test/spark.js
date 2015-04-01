@@ -29,6 +29,11 @@ function State() {
   this.server = {};
   this.socket = new Emitter();
   this.socket.write = function() {};
+  this.rgb = {
+    red: null,
+    green: null,
+    blue: null
+  };
 }
 
 sinon.stub(Spark.Client, "create", function(spark, onCreated) {
@@ -729,9 +734,12 @@ exports["Spark.prototype.internalRGB"] = {
   },
 
   get: function(test) {
-    test.expect(1);
+    test.expect(2);
 
-    test.equal(this.spark.internalRGB(), this.spark);
+    test.deepEqual(this.spark.internalRGB(), {
+      red: null, green: null, blue: null
+    });
+    test.ok(this.socketwrite.notCalled);
 
     test.done();
   },
