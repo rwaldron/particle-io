@@ -882,7 +882,7 @@ exports["Spark.prototype.internalRGB"] = {
   setBadValues: function(test) {
     var spark = this.spark;
 
-    test.expect(12);
+    test.expect(14);
 
     // null
     test.throws(function() {
@@ -897,6 +897,12 @@ exports["Spark.prototype.internalRGB"] = {
     // bad hex
     test.throws(function() {
       spark.internalRGB("#ggffff");
+    });
+    test.throws(function() {
+      spark.internalRGB("#ggffffff");
+    });
+    test.throws(function() {
+      spark.internalRGB("#ffffffff");
     });
 
     // by params
