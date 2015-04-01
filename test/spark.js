@@ -880,7 +880,7 @@ exports["Spark.prototype.internalRGB"] = {
   },
 
   setBadValues: function(test) {
-    test.expect(5);
+    test.expect(6);
 
     test.throws(function() {
       this.spark.internalRGB(null);
@@ -900,6 +900,10 @@ exports["Spark.prototype.internalRGB"] = {
 
     test.throws(function() {
       this.spark.internalRGB([10, 20, null]);
+    });
+
+    test.throws(function() {
+      this.spark.internalRGB({red: 255, green: 100});
     });
 
     test.done();
