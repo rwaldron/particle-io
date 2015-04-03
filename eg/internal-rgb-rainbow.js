@@ -12,6 +12,6 @@ board.on("ready", function() {
     if (index + 1 === rainbow.length) {
       index = 0;
     }
-    board.internalRGB(rainbow[index++]);
+    this.internalRGB(rainbow[index++]);
   }.bind(this), 500);
 });
