@@ -1,15 +1,16 @@
 var five = require("johnny-five"),
-  Spark = require("../lib/spark"),
+  Particle = require("../lib/particle"),
   temporal = require('temporal'),
   board;
 
-// Create Johnny-Five board connected via Spark
+// Create Johnny-Five board connected via Particle
 board = new five.Board({
-  io: new Spark({
-    token: process.env.SPARK_TOKEN,
-    deviceId: process.env.SPARK_DEVICE_ID
+  io: new Particle({
+    token: process.env.PARTICLE_TOKEN,
+    deviceId: process.env.PARTICLE_DEVICE_ID
   })
 });
+
 
 // The board's pins will not be accessible until
 // the board has reported that it is ready

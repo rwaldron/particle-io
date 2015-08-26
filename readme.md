@@ -1,29 +1,29 @@
-# Spark-io
+# Particle-io
 
 [![Build Status](https://travis-ci.org/rwaldron/spark-io.png?branch=master)](https://travis-ci.org/rwaldron/spark-io)
 
-Spark-io is a Firmata-compatibility IO class for writing node programs that interact with [Particle devices](http://docs.particle.io/) (formerly Spark). Spark-io was built at [Bocoup](http://bocoup.com/)
+Particle-io is a Firmata-compatibility IO class for writing node programs that interact with [Particle devices](http://docs.particle.io/) (formerly Spark). Particle-io was built at [Bocoup](http://bocoup.com/)
 
 ### Getting Started
 
-In order to use the spark-io library, you will need to load the special
+In order to use the particle-io library, you will need to load the special
 [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your
 device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.
 
-We also recommend storing your Spark token and device ID in a dot file so they can be accessed as properties of `process.env`. Create a file in your home directory called `.sparkrc` that contains: 
+We also recommend storing your Particle token and device ID in a dot file so they can be accessed as properties of `process.env`. Create a file in your home directory called `.particlerc` that contains: 
 
 ```sh
-export SPARK_TOKEN="your spark token"
-export SPARK_DEVICE_ID="your device id"
+export PARTICLE_TOKEN="your particle token"
+export PARTICLE_DEVICE_ID="your device id"
 ```
 
 Then add the following to your dot-rc file of choice:
 
 ```sh
-source ~/.sparkrc
+source ~/.particlerc
 ```
 
-Ensure your host computer (where you're running your Node.js application) and the Spark are on the same local network.
+Ensure your host computer (where you're running your Node.js application) and the Particle are on the same local network.
 
 ### Blink an Led
 
@@ -31,10 +31,10 @@ Ensure your host computer (where you're running your Node.js application) and th
 The "Hello World" of microcontroller programming:
 
 ```js
-var Spark = require("spark-io");
-var board = new Spark({
-  token: process.env.SPARK_TOKEN,
-  deviceId: process.env.SPARK_DEVICE_ID
+var Particle = require("particle-io");
+var board = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceId: process.env.PARTICLE_DEVICE_ID
 });
 
 board.on("ready", function() {
@@ -52,15 +52,15 @@ board.on("ready", function() {
 
 ### Johnny-Five IO Plugin
 
-Spark-IO can be used as an [IO Plugin](https://github.com/rwaldron/johnny-five/wiki/IO-Plugins) for [Johnny-Five](https://github.com/rwaldron/johnny-five):
+Particle-IO can be used as an [IO Plugin](https://github.com/rwaldron/johnny-five/wiki/IO-Plugins) for [Johnny-Five](https://github.com/rwaldron/johnny-five):
 
 ```js
 var five = require("johnny-five");
-var Spark = require("spark-io");
+var Particle = require("particle-io");
 var board = new five.Board({
-  io: new Spark({
-    token: process.env.SPARK_TOKEN,
-    deviceId: process.env.SPARK_DEVICE_ID
+  io: new Particle({
+    token: process.env.PARTICLE_TOKEN,
+    deviceId: process.env.PARTICLE_DEVICE_ID
   })
 });
 
@@ -75,10 +75,10 @@ board.on("ready", function() {
 
 **MODES**
 
-> The `MODES` property is available as a Spark instance property:
+> The `MODES` property is available as a Particle instance property:
 
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 board.MODES;
 ```
 - INPUT: 0
@@ -95,7 +95,7 @@ board.MODES;
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 
@@ -116,7 +116,7 @@ board.on("ready", function() {
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 
@@ -138,7 +138,7 @@ board.on("ready", function() {
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 
@@ -159,7 +159,7 @@ board.on("ready", function() {
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 
@@ -176,7 +176,7 @@ board.on("ready", function() {
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 
@@ -194,7 +194,7 @@ board.on("ready", function() {
 
 Example:
 ```js
-var board = new Spark(...);
+var board = new Particle(...);
 
 board.on("ready", function() {
 

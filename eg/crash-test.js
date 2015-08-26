@@ -1,8 +1,8 @@
 var moment = require("moment");
-var Spark = require("../lib/spark");
-var board = new Spark({
-  token: process.env.SPARK_TOKEN,
-  deviceId: process.env.SPARK_DEVICE_ROBOTSCONF
+var Particle = require("../lib/particle");
+var board = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceId: process.env.PARTICLE_DEVICE_ROBOTSCONF
 });
 
 // node eg/crash-test.js

@@ -7,7 +7,7 @@ node eg/servo-prompt.js
 
 
 ``` javascript
-var Spark    = require('../lib/spark');
+var Particle    = require('../lib/particle');
 var readline = require('readline');
 
 var rl = readline.createInterface({
@@ -16,9 +16,9 @@ var rl = readline.createInterface({
 });
 
 
-var board = new Spark({
-  token: process.env.SPARK_TOKEN,
-  deviceId: process.env.SPARK_DEVICE_ID
+var board = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceId: process.env.PARTICLE_DEVICE_ID
 });
 
 

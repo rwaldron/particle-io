@@ -1,6 +1,6 @@
 {
   "name": "spark-io",
-  "description": "Spark Core IO Plugin for Johnny-Five",
+  "description": "Particle IO Plugin for Johnny-Five",
   "version": "0.6.1",
   "homepage": "https://github.com/rwaldron/spark-io",
   "author": {
@@ -15,7 +15,7 @@
     { "name": "Ron Evans", "email": "<ron@hybridgroup.com>" }
   ],
   "keywords": [
-    "spark", "io", "arduino", "firmata", "johnny-five"
+    "particle", "spark", "io", "arduino", "firmata", "johnny-five"
   ],
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
       "url": "https://github.com/rwaldron/spark-io/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/spark",
+  "main": "lib/particle",
   "engines": {
     "node": ">=0.10.0"
   },

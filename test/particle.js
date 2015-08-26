@@ -1,9 +1,9 @@
 "use strict";
 
-var Spark = require("../lib/spark");
+var Particle = require("../lib/particle");
 var Emitter = require("events").EventEmitter;
 var sinon = require("sinon");
-var SparkAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
+var ParticleAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
 
 
 function restore(target) {
@@ -36,14 +36,14 @@ function State() {
   };
 }
 
-sinon.stub(Spark.Client, "create", function(spark, onCreated) {
+sinon.stub(Particle.Client, "create", function(particle, onCreated) {
   process.nextTick(function() {
-    spark.emit("ready");
+    particle.emit("ready");
   });
   process.nextTick(onCreated);
 });
 
-exports["Spark"] = {
+exports["Particle"] = {
   setUp: function(done) {
 
     this.clock = sinon.useFakeTimers();
@@ -51,11 +51,11 @@ exports["Spark"] = {
     this.state = new State();
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
       handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
-    this.spark = new Spark({
+    this.particle = new Particle({
       token: "token",
       deviceId: "deviceId"
     });
@@ -109,19 +109,19 @@ exports["Spark"] = {
     );
 
     this.proto.functions.forEach(function(method) {
-      test.equal(typeof this.spark[method.name], "function");
+      test.equal(typeof this.particle[method.name], "function");
     }, this);
 
     this.proto.objects.forEach(function(method) {
-      test.equal(typeof this.spark[method.name], "object");
+      test.equal(typeof this.particle[method.name], "object");
     }, this);
 
     this.proto.numbers.forEach(function(method) {
-      test.equal(typeof this.spark[method.name], "number");
+      test.equal(typeof this.particle[method.name], "number");
     }, this);
 
     this.instance.forEach(function(property) {
-      test.notEqual(typeof this.spark[property.name], "undefined");
+      test.notEqual(typeof this.particle[property.name], "undefined");
     }, this);
 
     test.done();
@@ -129,19 +129,19 @@ exports["Spark"] = {
   readonly: function(test) {
     test.expect(7);
 
-    test.equal(this.spark.HIGH, 1);
+    test.equal(this.particle.HIGH, 1);
 
     test.throws(function() {
-      this.spark.HIGH = 42;
+      this.particle.HIGH = 42;
     });
 
-    test.equal(this.spark.LOW, 0);
+    test.equal(this.particle.LOW, 0);
 
     test.throws(function() {
-      this.spark.LOW = 42;
+      this.particle.LOW = 42;
     });
 
-    test.deepEqual(this.spark.MODES, {
+    test.deepEqual(this.particle.MODES, {
       INPUT: 0,
       OUTPUT: 1,
       ANALOG: 2,
@@ -150,24 +150,24 @@ exports["Spark"] = {
     });
 
     test.throws(function() {
-      this.spark.MODES.INPUT = 42;
+      this.particle.MODES.INPUT = 42;
     });
 
     test.throws(function() {
-      this.spark.MODES = 42;
+      this.particle.MODES = 42;
     });
 
     test.done();
   },
   emitter: function(test) {
     test.expect(1);
-    test.ok(this.spark instanceof Emitter);
+    test.ok(this.particle instanceof Emitter);
     test.done();
   },
   connected: function(test) {
     test.expect(1);
 
-    this.spark.on("connect", function() {
+    this.particle.on("connect", function() {
       test.ok(true);
       test.done();
     });
@@ -175,7 +175,7 @@ exports["Spark"] = {
   ready: function(test) {
     test.expect(1);
 
-    this.spark.on("ready", function() {
+    this.particle.on("ready", function() {
       test.ok(true);
       test.done();
     });
@@ -188,7 +188,7 @@ exports["Spark"] = {
   "analogRead",
   "digitalRead"
 ].forEach(function(fn) {
-  var entry = "Spark.prototype." + fn;
+  var entry = "Particle.prototype." + fn;
   var action = fn.toLowerCase();
   var isAnalog = action === "analogwrite" || action === "analogread";
 
@@ -212,11 +212,11 @@ exports["Spark"] = {
       this.state = new State();
       this.map = sinon.stub(Map.prototype, "get").returns(this.state);
       this.socketwrite = sinon.spy(this.state.socket, "write");
-      this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+      this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
         handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
       });
 
-      this.spark = new Spark({
+      this.particle = new Particle({
         token: "token",
         deviceId: "deviceId"
       });
@@ -246,7 +246,7 @@ exports["Spark"] = {
         test.done();
       };
 
-      this.spark[fn](pin, handler);
+      this.particle[fn](pin, handler);
 
       var buffer = this.socketwrite.args[0][0];
 
@@ -265,7 +265,7 @@ exports["Spark"] = {
         test.done();
       };
 
-      this.spark[fn](pin, handler);
+      this.particle[fn](pin, handler);
       this.state.socket.emit("data", receiving);
     };
 
@@ -274,14 +274,14 @@ exports["Spark"] = {
 
       var event = type + "-read-" + pin;
 
-      this.spark.once(event, function(data) {
+      this.particle.once(event, function(data) {
         test.equal(data, value);
         test.done();
       });
 
       var handler = function(data) {};
 
-      this.spark[fn](pin, handler);
+      this.particle[fn](pin, handler);
       this.state.socket.emit("data", receiving);
     };
 
@@ -296,7 +296,7 @@ exports["Spark"] = {
         };
 
         // Analog read on pin 0 (zero), which is A0 or 10
-        this.spark.analogRead(0, handler);
+        this.particle.analogRead(0, handler);
         this.state.socket.emit("data", receiving);
       };
     }
@@ -308,7 +308,7 @@ exports["Spark"] = {
     exports[entry].write = function(test) {
       test.expect(4);
 
-      this.spark[fn](pin, value);
+      this.particle[fn](pin, value);
 
       test.ok(this.socketwrite.calledOnce);
 
@@ -324,9 +324,9 @@ exports["Spark"] = {
     exports[entry].stored = function(test) {
       test.expect(1);
 
-      this.spark[fn](pin, value);
+      this.particle[fn](pin, value);
 
-      test.equal(this.spark.pins[index].value, value);
+      test.equal(this.particle.pins[index].value, value);
 
       test.done();
     };
@@ -334,18 +334,18 @@ exports["Spark"] = {
 });
 
 
-exports["Spark.prototype.servoWrite"] = {
+exports["Particle.prototype.servoWrite"] = {
   setUp: function(done) {
     this.clock = sinon.useFakeTimers();
 
     this.state = new State();
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
       handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
-    this.spark = new Spark({
+    this.particle = new Particle({
       token: "token",
       deviceId: "deviceId"
     });
@@ -361,7 +361,7 @@ exports["Spark.prototype.servoWrite"] = {
 
     var sent = [2, 0, 180];
 
-    this.spark.analogWrite("D0", 180);
+    this.particle.analogWrite("D0", 180);
 
     var buffer = this.socketwrite.args[0][0];
 
@@ -375,7 +375,7 @@ exports["Spark.prototype.servoWrite"] = {
 
     var sent = [2, 10, 255];
 
-    this.spark.analogWrite("A0", 255);
+    this.particle.analogWrite("A0", 255);
 
     var buffer = this.socketwrite.args[0][0];
 
@@ -390,7 +390,7 @@ exports["Spark.prototype.servoWrite"] = {
 
     var sent = [0x41, 0, 180];
 
-    this.spark.servoWrite("D0", 180);
+    this.particle.servoWrite("D0", 180);
 
     var buffer = this.socketwrite.args[0][0];
 
@@ -405,7 +405,7 @@ exports["Spark.prototype.servoWrite"] = {
 
     var sent = [0x41, 10, 180];
 
-    this.spark.servoWrite("A0", 180);
+    this.particle.servoWrite("A0", 180);
 
     var buffer = this.socketwrite.args[0][0];
 
@@ -418,18 +418,18 @@ exports["Spark.prototype.servoWrite"] = {
 
 
 
-exports["Spark.prototype.pinMode"] = {
+exports["Particle.prototype.pinMode"] = {
   setUp: function(done) {
 
     this.clock = sinon.useFakeTimers();
     this.state = new State();
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
       handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
-    this.spark = new Spark({
+    this.particle = new Particle({
       token: "token",
       deviceId: "deviceId"
     });
@@ -445,7 +445,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 11, 1];
 
-    this.spark.pinMode("A1", 1);
+    this.particle.pinMode("A1", 1);
     test.ok(this.socketwrite.calledOnce);
 
     var buffer = this.socketwrite.args[0][0];
@@ -460,7 +460,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 11, 0];
 
-    this.spark.pinMode("A1", 0);
+    this.particle.pinMode("A1", 0);
     test.ok(this.socketwrite.calledOnce);
 
     var buffer = this.socketwrite.args[0][0];
@@ -476,7 +476,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 11, 2];
 
-    this.spark.pinMode(1, 2);
+    this.particle.pinMode(1, 2);
     test.ok(this.socketwrite.calledOnce);
 
     var buffer = this.socketwrite.args[0][0];
@@ -492,7 +492,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 0, 1];
 
-    this.spark.pinMode("D0", 1);
+    this.particle.pinMode("D0", 1);
 
     test.ok(this.socketwrite.calledOnce);
 
@@ -509,7 +509,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 0, 0];
 
-    this.spark.pinMode("D0", 0);
+    this.particle.pinMode("D0", 0);
 
     test.ok(this.socketwrite.calledOnce);
 
@@ -526,7 +526,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 0, 4];
 
-    this.spark.pinMode("D0", 4);
+    this.particle.pinMode("D0", 4);
 
     test.ok(this.socketwrite.calledOnce);
 
@@ -543,7 +543,7 @@ exports["Spark.prototype.pinMode"] = {
 
     var sent = [0, 0, 1];
 
-    this.spark.pinMode("D0", 3);
+    this.particle.pinMode("D0", 3);
 
     test.ok(this.socketwrite.calledOnce);
 
@@ -559,14 +559,14 @@ exports["Spark.prototype.pinMode"] = {
     test.expect(9);
 
     try {
-      this.spark.pinMode("D0", 3);
-      this.spark.pinMode("D1", 3);
-      this.spark.pinMode("A0", 3);
-      this.spark.pinMode("A1", 3);
-      this.spark.pinMode("A4", 3);
-      this.spark.pinMode("A5", 3);
-      this.spark.pinMode("A6", 3);
-      this.spark.pinMode("A7", 3);
+      this.particle.pinMode("D0", 3);
+      this.particle.pinMode("D1", 3);
+      this.particle.pinMode("A0", 3);
+      this.particle.pinMode("A1", 3);
+      this.particle.pinMode("A4", 3);
+      this.particle.pinMode("A5", 3);
+      this.particle.pinMode("A6", 3);
+      this.particle.pinMode("A7", 3);
 
       test.ok(true);
     } catch(e) {
@@ -574,56 +574,56 @@ exports["Spark.prototype.pinMode"] = {
     }
 
     try {
-      this.spark.pinMode("D2", 3);
+      this.particle.pinMode("D2", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D3", 3);
+      this.particle.pinMode("D3", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D4", 3);
+      this.particle.pinMode("D4", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D5", 3);
+      this.particle.pinMode("D5", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D6", 3);
+      this.particle.pinMode("D6", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D7", 3);
+      this.particle.pinMode("D7", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("A2", 3);
+      this.particle.pinMode("A2", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("A3", 3);
+      this.particle.pinMode("A3", 3);
       test.ok(false);
     } catch(e) {
       test.ok(true);
@@ -636,14 +636,14 @@ exports["Spark.prototype.pinMode"] = {
     test.expect(9);
 
     try {
-      this.spark.pinMode("D0", 4);
-      this.spark.pinMode("D1", 4);
-      this.spark.pinMode("A0", 4);
-      this.spark.pinMode("A1", 4);
-      this.spark.pinMode("A4", 4);
-      this.spark.pinMode("A5", 4);
-      this.spark.pinMode("A6", 4);
-      this.spark.pinMode("A7", 4);
+      this.particle.pinMode("D0", 4);
+      this.particle.pinMode("D1", 4);
+      this.particle.pinMode("A0", 4);
+      this.particle.pinMode("A1", 4);
+      this.particle.pinMode("A4", 4);
+      this.particle.pinMode("A5", 4);
+      this.particle.pinMode("A6", 4);
+      this.particle.pinMode("A7", 4);
 
       test.ok(true);
     } catch(e) {
@@ -651,56 +651,56 @@ exports["Spark.prototype.pinMode"] = {
     }
 
     try {
-      this.spark.pinMode("D2", 4);
+      this.particle.pinMode("D2", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D3", 4);
+      this.particle.pinMode("D3", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D4", 4);
+      this.particle.pinMode("D4", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D5", 4);
+      this.particle.pinMode("D5", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D6", 4);
+      this.particle.pinMode("D6", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("D7", 4);
+      this.particle.pinMode("D7", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("A2", 4);
+      this.particle.pinMode("A2", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
     }
 
     try {
-      this.spark.pinMode("A3", 4);
+      this.particle.pinMode("A3", 4);
       test.ok(false);
     } catch(e) {
       test.ok(true);
@@ -710,18 +710,18 @@ exports["Spark.prototype.pinMode"] = {
   }
 };
 
-exports["Spark.prototype.internalRGB"] = {
+exports["Particle.prototype.internalRGB"] = {
   setUp: function(done) {
 
     this.clock = sinon.useFakeTimers();
     this.state = new State();
     this.map = sinon.stub(Map.prototype, "get").returns(this.state);
     this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Spark.prototype, "connect", function(handler) {
+    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
       handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
     });
 
-    this.spark = new Spark({
+    this.particle = new Particle({
       token: "token",
       deviceId: "deviceId"
     });
@@ -736,13 +736,13 @@ exports["Spark.prototype.internalRGB"] = {
   get: function(test) {
     test.expect(3);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: null, green: null, blue: null
     });
     test.ok(this.socketwrite.notCalled);
 
-    this.spark.internalRGB(10, 20, 30);
-    test.deepEqual(this.spark.internalRGB(), {
+    this.particle.internalRGB(10, 20, 30);
+    test.deepEqual(this.particle.internalRGB(), {
       red: 10, green: 20, blue: 30
     });
 
@@ -752,14 +752,14 @@ exports["Spark.prototype.internalRGB"] = {
   setReturnsThis: function(test) {
     test.expect(1);
 
-    test.equal(this.spark.internalRGB(0, 0, 0), this.spark);
+    test.equal(this.particle.internalRGB(0, 0, 0), this.particle);
     test.done();
   },
 
   setWithThreeArgs: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB(0, 0, 0);
+    this.particle.internalRGB(0, 0, 0);
 
     test.ok(this.socketwrite.called);
 
@@ -770,7 +770,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 0, green: 0, blue: 0
     });
 
@@ -780,7 +780,7 @@ exports["Spark.prototype.internalRGB"] = {
   setWithArrayOfThreeBytes: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB([0, 0, 0]);
+    this.particle.internalRGB([0, 0, 0]);
 
     test.ok(this.socketwrite.called);
 
@@ -791,7 +791,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 0, green: 0, blue: 0
     });
 
@@ -801,7 +801,7 @@ exports["Spark.prototype.internalRGB"] = {
   setWithObjectContainingPropertiesRGB: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB({
+    this.particle.internalRGB({
       red: 0, green: 0, blue: 0
     });
 
@@ -814,7 +814,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 0, green: 0, blue: 0
     });
 
@@ -824,7 +824,7 @@ exports["Spark.prototype.internalRGB"] = {
   setWithHexString: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB("#000000");
+    this.particle.internalRGB("#000000");
 
     test.ok(this.socketwrite.called);
 
@@ -835,7 +835,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 0, green: 0, blue: 0
     });
 
@@ -845,7 +845,7 @@ exports["Spark.prototype.internalRGB"] = {
   setWithHexStringNoPrefix: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB("000000");
+    this.particle.internalRGB("000000");
 
     test.ok(this.socketwrite.called);
 
@@ -856,7 +856,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 0);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 0, green: 0, blue: 0
     });
 
@@ -866,7 +866,7 @@ exports["Spark.prototype.internalRGB"] = {
   setConstrainsValues: function(test) {
     test.expect(6);
 
-    this.spark.internalRGB(300, -1, 256);
+    this.particle.internalRGB(300, -1, 256);
 
     test.ok(this.socketwrite.called);
 
@@ -877,7 +877,7 @@ exports["Spark.prototype.internalRGB"] = {
     test.equal(buffer.readUInt8(2), 0);
     test.equal(buffer.readUInt8(3), 255);
 
-    test.deepEqual(this.spark.internalRGB(), {
+    test.deepEqual(this.particle.internalRGB(), {
       red: 255, green: 0, blue: 255
     });
 
@@ -885,63 +885,63 @@ exports["Spark.prototype.internalRGB"] = {
   },
 
   setBadValues: function(test) {
-    var spark = this.spark;
+    var particle = this.particle;
 
     test.expect(14);
 
     // null
     test.throws(function() {
-      spark.internalRGB(null);
+      particle.internalRGB(null);
     });
 
     // shorthand not supported
     test.throws(function() {
-      spark.internalRGB("#fff");
+      particle.internalRGB("#fff");
     });
 
     // bad hex
     test.throws(function() {
-      spark.internalRGB("#ggffff");
+      particle.internalRGB("#ggffff");
     });
     test.throws(function() {
-      spark.internalRGB("#ggffffff");
+      particle.internalRGB("#ggffffff");
     });
     test.throws(function() {
-      spark.internalRGB("#ffffffff");
+      particle.internalRGB("#ffffffff");
     });
 
     // by params
     test.throws(function() {
-      spark.internalRGB(10, 20, null);
+      particle.internalRGB(10, 20, null);
     });
     test.throws(function() {
-      spark.internalRGB(10, 20);
+      particle.internalRGB(10, 20);
     });
     test.throws(function() {
-      spark.internalRGB(10, undefined, 30);
+      particle.internalRGB(10, undefined, 30);
     });
 
 
     // by array
     test.throws(function() {
-      spark.internalRGB([10, 20, null]);
+      particle.internalRGB([10, 20, null]);
     });
     test.throws(function() {
-      spark.internalRGB([10, undefined, 30]);
+      particle.internalRGB([10, undefined, 30]);
     });
     test.throws(function() {
-      spark.internalRGB([10, 20]);
+      particle.internalRGB([10, 20]);
     });
 
     // by object
     test.throws(function() {
-      spark.internalRGB({red: 255, green: 100});
+      particle.internalRGB({red: 255, green: 100});
     });
     test.throws(function() {
-      spark.internalRGB({red: 255, green: 100, blue: null});
+      particle.internalRGB({red: 255, green: 100, blue: null});
     });
     test.throws(function() {
-      spark.internalRGB({red: 255, green: 100, blue: undefined});
+      particle.internalRGB({red: 255, green: 100, blue: undefined});
     });
 
 

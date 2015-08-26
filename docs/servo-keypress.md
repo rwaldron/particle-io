@@ -8,15 +8,15 @@ node eg/servo-keypress.js
 
 ``` javascript
 var five     = require("johnny-five");
-var Spark    = require("../lib/spark");
+var Particle    = require("../lib/particle");
 var keypress = require('keypress');
 
 keypress(process.stdin);
 
 var board = new five.Board({
-  io: new Spark({
-    token: process.env.SPARK_TOKEN,
-    deviceId: process.env.SPARK_DEVICE_ID
+  io: new Particle({
+    token: process.env.PARTICLE_TOKEN,
+    deviceId: process.env.PARTICLE_DEVICE_ID
   })
 });
 
