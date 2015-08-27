@@ -1,7 +1,7 @@
 {
   "name": "particle-io",
   "description": "Particle IO Plugin for Johnny-Five",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "homepage": "https://github.com/rwaldron/particle-io",
   "author": {
     "name": "Rick Waldron <waldron.rick@gmail.com>",
