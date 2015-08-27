@@ -1,5 +1,5 @@
 {
-  "name": "spark-io",
+  "name": "particle-io",
   "description": "Particle IO Plugin for Johnny-Five",
   "version": "0.6.1",
   "homepage": "https://github.com/rwaldron/spark-io",
@@ -12,7 +12,8 @@
     { "name": "David Resseguie", "email": "<david@resseguie.com>" },
     { "name": "Pawel Szymczykowski", "email": "<makenai@gmail.com>" },
     { "name": "Remy Sharp", "email": "<remy@leftlogic.com>" },
-    { "name": "Ron Evans", "email": "<ron@hybridgroup.com>" }
+    { "name": "Ron Evans", "email": "<ron@hybridgroup.com>" },
+    { "name": "Brian Genisio", "email": "<BrianGenisio@Gmail.com>" }
   ],
   "keywords": [
     "particle", "spark", "io", "arduino", "firmata", "johnny-five"
