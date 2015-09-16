@@ -334,6 +334,74 @@ exports["Particle"] = {
   }
 });
 
+exports["Particle.protototype.i2cConfig"] = {
+  setUp: function(done) {
+    this.clock = sinon.useFakeTimers();
+
+    this.state = new State();
+    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
+    this.socketwrite = sinon.spy(this.state.socket, "write");
+    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
+      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
+    });
+
+    this.particle = new Particle({
+      token: "token",
+      deviceId: "deviceId"
+    });
+
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+  noOptionsThrowsException: function(test) {
+    var particle = this.particle;
+    test.expect(1);
+
+    test.throws(function() {
+      particle.i2cConfig();
+    }, Error);
+
+    test.done();
+  },
+  numericOptionSendsConfigWithDelay: function(test) {
+    test.expect(4);
+
+    this.particle.i2cConfig(55);
+
+    var sent = [48, 55, 0];
+    var buffer = this.socketwrite.args[0][0];
+
+    test.equal(sent.length, buffer.length);
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+
+    test.done();
+  },
+  objectOptionSendsConfigWithDelay: function(test) {
+    test.expect(4);
+
+    this.particle.i2cConfig({
+      delay: 550
+    });
+
+    var sent = [48, 38, 4];
+    var buffer = this.socketwrite.args[0][0];
+
+    test.equal(sent.length, buffer.length);
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+
+    test.done();
+  }
+};
+
 
 exports["Particle.prototype.servoWrite"] = {
   setUp: function(done) {
