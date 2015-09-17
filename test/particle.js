@@ -365,7 +365,7 @@ exports["Particle.protototype.i2cConfig"] = {
       delay: 550
     });
 
-    var sent = [48, 38, 4];
+    var sent = [0x30, 38, 4];
     var buffer = this.socketwrite.args[0][0];
 
     test.equal(sent.length, buffer.length);
@@ -373,6 +373,101 @@ exports["Particle.protototype.i2cConfig"] = {
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
     }
+
+    test.done();
+  }
+};
+
+function validateSent(test, buffer, sent) {
+  test.equal(sent.length, buffer.length);
+
+  for (var i = 0; i < sent.length; i++) {
+    test.equal(sent[i], buffer.readUInt8(i));
+  }
+}
+
+exports["Particle.protototype.i2cWrite"] = {
+  setUp: function(done) {
+    this.particle = setupParticle(this);
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+  singleValueGetsSent: function(test) {
+    var address = 0x01;
+    var register = 0x02;
+    var value = 0xEE;
+
+    test.expect(9);
+
+    this.particle.i2cWrite(address, register, value);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x31,       // command
+      0x01,       // address
+      0x04, 0x00, // data length
+      0x02, 0x00, // register
+      0x6E, 0x01  // 7bit value
+    ]);
+
+    test.done();
+  },
+  multipleDataBytesGetSent: function(test) {
+    var address = 0x11;
+    var register = 0x22;
+    var data = [0x01, 0xCC, 0xFF];
+
+    test.expect(13);
+
+    this.particle.i2cWrite(address, register, data);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x31,       // command
+      0x11,       // address
+      0x08, 0x00, // data length
+      0x22, 0x00, // register
+      0x01, 0x00, // 7bit data[0]
+      0x4C, 0x01, // 7bit data[1]
+      0x7F, 0x01, // 7bit data[2]
+    ]);
+
+    test.done();
+  },
+  dataCallWithEmbeddedRegister: function(test) {
+    var address = 0x33;
+    var register = 0x44;
+    var data = [register, 0xAA];
+
+    test.expect(9);
+
+    this.particle.i2cWrite(address, data);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x31,       // command
+      0x33,       // address
+      0x04, 0x00, // data length
+      0x44, 0x00, // register
+      0x2A, 0x01, // 7bit data[0]
+    ]);
+
+    test.done();
+  },
+  registerWithoutData: function(test) {
+    var address = 0x55;
+    var register = 0x66;
+
+    test.expect(7);
+
+    this.particle.i2cWrite(address, register);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x31,       // command
+      0x55,       // address
+      0x02, 0x00, // data length
+      0x66, 0x00  // register
+    ]);
 
     test.done();
   }
