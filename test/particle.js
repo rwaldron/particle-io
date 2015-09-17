@@ -6,6 +6,22 @@ var sinon = require("sinon");
 var ParticleAPIVariable = {cmd: "VarReturn", result: "127.0.0.1:48879"};
 
 
+function setupParticle(test) {
+  test.clock = sinon.useFakeTimers();
+
+  test.state = new State();
+  test.map = sinon.stub(Map.prototype, "get").returns(test.state);
+  test.socketwrite = sinon.spy(test.state.socket, "write");
+  test.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
+    handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
+  });
+
+  return new Particle({
+    token: "token",
+    deviceId: "deviceId"
+  });
+}
+
 function restore(target) {
   for (var prop in target) {
     if (target[prop] != null &&
@@ -45,20 +61,7 @@ sinon.stub(Particle.Client, "create", function(particle, onCreated) {
 
 exports["Particle"] = {
   setUp: function(done) {
-
-    this.clock = sinon.useFakeTimers();
-
-    this.state = new State();
-    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-    this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-    });
-
-    this.particle = new Particle({
-      token: "token",
-      deviceId: "deviceId"
-    });
+    this.particle = setupParticle(this);
 
     this.proto = {};
 
@@ -207,21 +210,7 @@ exports["Particle"] = {
 
   exports[entry] = {
     setUp: function(done) {
-
-      this.clock = sinon.useFakeTimers();
-
-      this.state = new State();
-      this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-      this.socketwrite = sinon.spy(this.state.socket, "write");
-      this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-        handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-      });
-
-      this.particle = new Particle({
-        token: "token",
-        deviceId: "deviceId"
-      });
-
+      this.particle = setupParticle(this);
       done();
     },
     tearDown: function(done) {
@@ -336,20 +325,7 @@ exports["Particle"] = {
 
 exports["Particle.protototype.i2cConfig"] = {
   setUp: function(done) {
-    this.clock = sinon.useFakeTimers();
-
-    this.state = new State();
-    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-    this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-    });
-
-    this.particle = new Particle({
-      token: "token",
-      deviceId: "deviceId"
-    });
-
+    this.particle = setupParticle(this);
     done();
   },
   tearDown: function(done) {
@@ -402,23 +378,9 @@ exports["Particle.protototype.i2cConfig"] = {
   }
 };
 
-
 exports["Particle.prototype.servoWrite"] = {
   setUp: function(done) {
-    this.clock = sinon.useFakeTimers();
-
-    this.state = new State();
-    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-    this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-    });
-
-    this.particle = new Particle({
-      token: "token",
-      deviceId: "deviceId"
-    });
-
+    this.particle = setupParticle(this);
     done();
   },
   tearDown: function(done) {
@@ -489,20 +451,7 @@ exports["Particle.prototype.servoWrite"] = {
 
 exports["Particle.prototype.pinMode"] = {
   setUp: function(done) {
-
-    this.clock = sinon.useFakeTimers();
-    this.state = new State();
-    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-    this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-    });
-
-    this.particle = new Particle({
-      token: "token",
-      deviceId: "deviceId"
-    });
-
+    this.particle = setupParticle(this);
     done();
   },
   tearDown: function(done) {
@@ -781,20 +730,7 @@ exports["Particle.prototype.pinMode"] = {
 
 exports["Particle.prototype.internalRGB"] = {
   setUp: function(done) {
-
-    this.clock = sinon.useFakeTimers();
-    this.state = new State();
-    this.map = sinon.stub(Map.prototype, "get").returns(this.state);
-    this.socketwrite = sinon.spy(this.state.socket, "write");
-    this.connect = sinon.stub(Particle.prototype, "connect", function(handler) {
-      handler(null, {cmd: "VarReturn", result: "127.0.0.1:48879"});
-    });
-
-    this.particle = new Particle({
-      token: "token",
-      deviceId: "deviceId"
-    });
-
+    this.particle = setupParticle(this);
     done();
   },
   tearDown: function(done) {
