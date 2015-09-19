@@ -323,6 +323,14 @@ exports["Particle"] = {
   }
 });
 
+function validateSent(test, buffer, sent) {
+  test.equal(sent.length, buffer.length);
+
+  for (var i = 0; i < sent.length; i++) {
+    test.equal(sent[i], buffer.readUInt8(i));
+  }
+}
+
 exports["Particle.protototype.i2cConfig"] = {
   setUp: function(done) {
     this.particle = setupParticle(this);
@@ -347,14 +355,10 @@ exports["Particle.protototype.i2cConfig"] = {
 
     this.particle.i2cConfig(55);
 
-    var sent = [48, 55, 0];
-    var buffer = this.socketwrite.args[0][0];
-
-    test.equal(sent.length, buffer.length);
-
-    for (var i = 0; i < sent.length; i++) {
-      test.equal(sent[i], buffer.readUInt8(i));
-    }
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x30,       // command
+      0x37, 0x00  // 7bit delay
+    ]);
 
     test.done();
   },
@@ -365,26 +369,14 @@ exports["Particle.protototype.i2cConfig"] = {
       delay: 550
     });
 
-    var sent = [0x30, 38, 4];
-    var buffer = this.socketwrite.args[0][0];
-
-    test.equal(sent.length, buffer.length);
-
-    for (var i = 0; i < sent.length; i++) {
-      test.equal(sent[i], buffer.readUInt8(i));
-    }
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x30,       // command
+      0x26, 0x04  // 7bit delay
+    ]);
 
     test.done();
   }
 };
-
-function validateSent(test, buffer, sent) {
-  test.equal(sent.length, buffer.length);
-
-  for (var i = 0; i < sent.length; i++) {
-    test.equal(sent[i], buffer.readUInt8(i));
-  }
-}
 
 exports["Particle.protototype.i2cWrite"] = {
   setUp: function(done) {
@@ -468,6 +460,66 @@ exports["Particle.protototype.i2cWrite"] = {
       0x02, 0x00, // data length
       0x66, 0x00  // register
     ]);
+
+    test.done();
+  }
+};
+
+exports["Particle.protototype.i2cRead"] = {
+  setUp: function(done) {
+    this.particle = setupParticle(this);
+    this.particle.i2cReadOnce = sinon.spy();
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+  callsReadOnceWithoutRegister: function(test) {
+    var address = 0x11;
+    var bytesToRead = 14;
+    var callback = sinon.spy();
+
+    test.expect(2);
+
+    this.particle.i2cRead(address, bytesToRead, callback);
+
+    test.ok(this.particle.i2cReadOnce.calledWith(address, null, bytesToRead));
+    test.ok(this.particle.i2cReadOnce.calledOnce);
+
+    test.done();
+  },
+  callsReadOnceWithRegister: function(test) {
+    var address = 0x11;
+    var register = 0x22;
+    var bytesToRead = 15;
+    var callback = sinon.spy();
+
+    test.expect(2);
+
+    this.particle.i2cRead(address, register, bytesToRead, callback);
+
+    test.ok(this.particle.i2cReadOnce.calledWith(address, register, bytesToRead));
+    test.ok(this.particle.i2cReadOnce.calledOnce);
+
+    test.done();
+  },
+  executesCallbackAndReadsAgain: function(test) {
+    var responseCallback;
+    var responseData = [0x01, 0x02, 0x03, 0x05];
+    var address = 0x11;
+    var register = 0x22;
+    var bytesToRead = responseData.length;
+    var callback = sinon.spy();
+
+    test.expect(2);
+
+    this.particle.i2cRead(address, register, bytesToRead, callback);
+    responseCallback = this.particle.i2cReadOnce.args[0][3];
+    responseCallback(responseData);
+
+    test.ok(callback.calledWith(responseData));
+    test.ok(this.particle.i2cReadOnce.calledTwice);
 
     test.done();
   }
