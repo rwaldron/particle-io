@@ -525,6 +525,97 @@ exports["Particle.protototype.i2cRead"] = {
   }
 };
 
+exports["Particle.protototype.i2cReadOnce"] = {
+  setUp: function(done) {
+    this.particle = setupParticle(this);
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+  readWithRegister: function(test) {
+    var address = 0x11;
+    var register = 0x22;
+    var bytesToRead = 4;
+    var callback = sinon.spy();
+
+    test.expect(7);
+
+    this.particle.i2cReadOnce(address, register, bytesToRead, callback);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x32,       // command
+      0x11,       // address
+      0x22, 0x00, // register
+      0x04, 0x00
+    ]);
+
+    test.done();
+  },
+  readWithoutRegister: function(test) {
+    var address = 0x11;
+    var bytesToRead = 4;
+    var callback = sinon.spy();
+
+    test.expect(7);
+
+    this.particle.i2cReadOnce(address, bytesToRead, callback);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x32,       // command
+      0x11,       // address
+      0x7F, 0x7F, // -1
+      0x04, 0x00
+    ]);
+
+    test.done();
+  },
+  receiveDataWithRegister: function(test) {
+    var address = 0x11;
+    var register = 0x22;
+    var bytesToRead = 4;
+    
+    test.expect(1);
+
+    var handler = function(data) {
+      test.deepEqual(data, [0x11, 0x22, 0x33, 0x44]);
+      test.done();
+    };
+
+    this.particle.i2cReadOnce(address, register, bytesToRead, handler);
+    
+    this.state.socket.emit("data", new Buffer([
+      0x77,       // I2C_REPLY
+      0x04,       // data length
+      0x11,       // address
+      0x22, 0x00, // register
+      0x11, 0x22, 0x33, 0x44 // data
+    ]));
+  },
+  receiveDataWithoutRegister: function(test) {
+    var address = 0x11;
+    var bytesToRead = 4;
+    
+    test.expect(1);
+
+    var handler = function(data) {
+      test.deepEqual(data, [0x11, 0x22, 0x33, 0x44]);
+      test.done();
+    };
+
+    this.particle.i2cReadOnce(address, bytesToRead, handler);
+    
+    this.state.socket.emit("data", new Buffer([
+      0x77,       // I2C_REPLY
+      0x04,       // data length
+      0x11,       // address
+      0x7F, 0x7F, // register -1
+      0x11, 0x22, 0x33, 0x44 // data
+    ]));
+  }
+};
+
 exports["Particle.prototype.servoWrite"] = {
   setUp: function(done) {
     this.particle = setupParticle(this);
