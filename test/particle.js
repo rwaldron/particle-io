@@ -150,7 +150,7 @@ exports["Particle"] = {
       ANALOG: 2,
       PWM: 3,
       SERVO: 4,
-      I2C: 5
+      I2C: 6
     });
 
     test.throws(function() {
