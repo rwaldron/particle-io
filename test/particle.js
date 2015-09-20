@@ -340,13 +340,16 @@ exports["Particle.protototype.i2cConfig"] = {
     restore(this);
     done();
   },
-  noOptionsThrowsException: function(test) {
+  noOptionsDefaultsToZero: function(test) {
     var particle = this.particle;
-    test.expect(1);
+    test.expect(4);
 
-    test.throws(function() {
-      particle.i2cConfig();
-    }, Error);
+    particle.i2cConfig();
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x30,       // command
+      0x00, 0x00  // 7bit delay
+    ]);
 
     test.done();
   },
