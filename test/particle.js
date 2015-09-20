@@ -465,6 +465,31 @@ exports["Particle.protototype.i2cWrite"] = {
   }
 };
 
+exports["Particle.protototype.i2cWriteReg"] = {
+  setUp: function(done) {
+    this.particle = setupParticle(this);
+    this.particle.i2cWrite = sinon.spy();
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+  callsWriteWithRegData: function(test) {
+    var address = 0x11;
+    var register = 0x22;
+    var value = 99;
+
+    test.expect(1);
+
+    this.particle.i2cWriteReg(address, register, value);
+
+    test.ok(this.particle.i2cWrite.calledWith(address, [register, value]));
+
+    test.done();
+  }
+};
+
 exports["Particle.protototype.i2cRead"] = {
   setUp: function(done) {
     this.particle = setupParticle(this);
