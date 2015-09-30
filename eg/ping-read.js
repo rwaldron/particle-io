@@ -1,8 +1,7 @@
 var Photon = require("../lib/particle");
 var board = new Photon({
-  token: "f3fca6f7dcd7ece92843a471a804b5919bb3a4dd",
-  // deviceId: "55ff72065075555327581687",
-  deviceId: "31002e000347343337373739",
+  token: process.env.PARTICLE_TOKEN,
+  deviceId: process.env.PARTICLE_PHOTON_1,
 });
 
 board.on("ready", function() {
