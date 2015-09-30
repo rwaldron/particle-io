@@ -1,6 +1,6 @@
 # Particle-io
 
-[![Build Status](https://travis-ci.org/rwaldron/spark-io.png?branch=master)](https://travis-ci.org/rwaldron/spark-io)
+[![Build Status](https://travis-ci.org/rwaldron/particle-io.png?branch=master)](https://travis-ci.org/rwaldron/particle-io)
 
 Particle-io is a Firmata-compatibility IO class for writing node programs that interact with [Particle devices](http://docs.particle.io/) (formerly Spark). Particle-io was built at [Bocoup](http://bocoup.com/)
 
