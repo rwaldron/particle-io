@@ -9,7 +9,7 @@ board.on("ready", function() {
 
   this.i2cConfig();
 
-  this.i2cRead(0x48, 0x00, 2, function(data) {
+  this.i2cRead(0x48, 2, function(data) {
     var raw = ((data[0] << 8) | data[1]) >> 4;
 
     if (raw & (1 << 11)) {

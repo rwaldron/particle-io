@@ -496,60 +496,92 @@ exports["Particle.protototype.i2cWriteReg"] = {
 exports["Particle.protototype.i2cRead"] = {
   setUp: function(done) {
     this.particle = setupParticle(this);
-    this.particle.i2cReadOnce = sinon.spy();
     done();
   },
   tearDown: function(done) {
     restore(this);
     done();
   },
-  callsReadOnceWithoutRegister: function(test) {
+  readWithRegister: function(test) {
     var address = 0x11;
-    var bytesToRead = 14;
+    var register = 0x22;
+    var bytesToRead = 4;
     var callback = sinon.spy();
 
-    test.expect(2);
+    test.expect(7);
+
+    this.particle.i2cRead(address, register, bytesToRead, callback);
+
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x33,       // command
+      0x11,       // address
+      0x22, 0x00, // register
+      0x04, 0x00
+    ]);
+
+    test.done();
+  },
+
+  readWithoutRegister: function(test) {
+    var address = 0x11;
+    var bytesToRead = 4;
+    var callback = sinon.spy();
+
+    test.expect(7);
 
     this.particle.i2cRead(address, bytesToRead, callback);
 
-    test.ok(this.particle.i2cReadOnce.calledWith(address, null, bytesToRead));
-    test.ok(this.particle.i2cReadOnce.calledOnce);
+    validateSent(test, this.socketwrite.args[0][0], [
+      0x33,       // command
+      0x11,       // address
+      0x7F, 0x01, // no register, send 0xFF
+      0x04, 0x00
+    ]);
 
     test.done();
   },
-  callsReadOnceWithRegister: function(test) {
+  receiveDataWithRegister: function(test) {
     var address = 0x11;
     var register = 0x22;
-    var bytesToRead = 15;
-    var callback = sinon.spy();
+    var bytesToRead = 4;
 
-    test.expect(2);
+    test.expect(1);
 
-    this.particle.i2cRead(address, register, bytesToRead, callback);
+    var handler = function(data) {
+      test.deepEqual(data, [0x11, 0x22, 0x33, 0x44]);
+      test.done();
+    };
 
-    test.ok(this.particle.i2cReadOnce.calledWith(address, register, bytesToRead));
-    test.ok(this.particle.i2cReadOnce.calledOnce);
+    this.particle.i2cRead(address, register, bytesToRead, handler);
 
-    test.done();
+    this.state.socket.emit("data", new Buffer([
+      0x77,       // I2C_REPLY
+      0x04,       // data length
+      0x11,       // address
+      0x22, 0x00, // register
+      0x11, 0x22, 0x33, 0x44 // data
+    ]));
   },
-  executesCallbackAndReadsAgain: function(test) {
-    var responseCallback;
-    var responseData = [0x01, 0x02, 0x03, 0x05];
+  receiveDataWithoutRegister: function(test) {
     var address = 0x11;
-    var register = 0x22;
-    var bytesToRead = responseData.length;
-    var callback = sinon.spy();
+    var bytesToRead = 4;
 
-    test.expect(2);
+    test.expect(1);
 
-    this.particle.i2cRead(address, register, bytesToRead, callback);
-    responseCallback = this.particle.i2cReadOnce.args[0][3];
-    responseCallback(responseData);
+    var handler = function(data) {
+      test.deepEqual(data, [0x11, 0x22, 0x33, 0x44]);
+      test.done();
+    };
 
-    test.ok(callback.calledWith(responseData));
-    test.ok(this.particle.i2cReadOnce.calledTwice);
+    this.particle.i2cRead(address, bytesToRead, handler);
 
-    test.done();
+    this.state.socket.emit("data", new Buffer([
+      0x77,       // I2C_REPLY
+      0x04,       // data length
+      0x11,       // address
+      0xFF, 0x00, // no register, receive dummy 0xFF
+      0x11, 0x22, 0x33, 0x44 // data
+    ]));
   }
 };
 
@@ -562,7 +594,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
     restore(this);
     done();
   },
-  readWithRegister: function(test) {
+  readOnceWithRegister: function(test) {
     var address = 0x11;
     var register = 0x22;
     var bytesToRead = 4;
@@ -581,7 +613,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
 
     test.done();
   },
-  readWithoutRegister: function(test) {
+  readOnceWithoutRegister: function(test) {
     var address = 0x11;
     var bytesToRead = 4;
     var callback = sinon.spy();
@@ -593,7 +625,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
     validateSent(test, this.socketwrite.args[0][0], [
       0x32,       // command
       0x11,       // address
-      0x7F, 0x7F, // -1
+      0x7F, 0x01, // no register, send 0xFF
       0x04, 0x00
     ]);
 
@@ -603,7 +635,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
     var address = 0x11;
     var register = 0x22;
     var bytesToRead = 4;
-    
+
     test.expect(1);
 
     var handler = function(data) {
@@ -612,7 +644,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
     };
 
     this.particle.i2cReadOnce(address, register, bytesToRead, handler);
-    
+
     this.state.socket.emit("data", new Buffer([
       0x77,       // I2C_REPLY
       0x04,       // data length
@@ -624,7 +656,7 @@ exports["Particle.protototype.i2cReadOnce"] = {
   receiveDataWithoutRegister: function(test) {
     var address = 0x11;
     var bytesToRead = 4;
-    
+
     test.expect(1);
 
     var handler = function(data) {
@@ -633,12 +665,12 @@ exports["Particle.protototype.i2cReadOnce"] = {
     };
 
     this.particle.i2cReadOnce(address, bytesToRead, handler);
-    
+
     this.state.socket.emit("data", new Buffer([
       0x77,       // I2C_REPLY
       0x04,       // data length
       0x11,       // address
-      0x7F, 0x7F, // register -1
+      0xFF, 0x00, // no register, receive dummy 0xFF
       0x11, 0x22, 0x33, 0x44 // data
     ]));
   }
