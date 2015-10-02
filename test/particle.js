@@ -323,6 +323,44 @@ exports["Particle"] = {
   }
 });
 
+
+exports["Particle.protototype.digitalRead (port value)"] = {
+  setUp: function(done) {
+    this.particle = setupParticle(this);
+    done();
+  },
+  tearDown: function(done) {
+    restore(this);
+    done();
+  },
+
+  portValue: function(test) {
+    test.expect(3);
+
+    var spy = sinon.spy();
+    var high = new Buffer(
+      // CMD, PORT, LSB, MSB
+      [0x05, 0x00, 0x20, 0x00]
+    );
+
+    var low = new Buffer(
+      // CMD, PORT, LSB, MSB
+      [0x05, 0x00, 0x10, 0x00]
+    );
+
+    this.particle.pinMode("D5", this.particle.MODES.INPUT);
+    this.particle.digitalRead("D5", spy);
+    this.state.socket.emit("data", high);
+    this.state.socket.emit("data", low);
+
+    test.equal(spy.callCount, 2);
+    test.ok(spy.firstCall.calledWith(1));
+    test.ok(spy.lastCall.calledWith(0));
+
+    test.done();
+  }
+};
+
 function validateSent(test, buffer, sent) {
   test.equal(sent.length, buffer.length);
 
