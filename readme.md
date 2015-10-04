@@ -91,7 +91,7 @@ board.MODES;
 
 **pinMode(pin, MODE)**
 
-> Set a pin's mode to any one of the MODES. PWM is supported on A0, A1, A4, A5, A6, A7, D0 and D1.
+> Set a pin's mode to any one of the MODES. 
 
 Example:
 ```js
@@ -108,6 +108,10 @@ board.on("ready", function() {
 });
 ```
 
+PWM Support (Servo support is also limited to these pins): 
+- Core pins: A0, A1, A4, A5, A6, A7, D0, D1.
+- Photon pins: A4, A5, D0, D1, D2, D3
+- P1 pins: A4, A5, D0, D1, D2, D3
 
 
 **digitalWrite(pin, value)**
