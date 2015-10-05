@@ -910,11 +910,13 @@ exports["Particle.prototype.pinMode"] = {
   },
 
   pwmError: function(test) {
-    test.expect(9);
+    test.expect(7);
 
     try {
       this.particle.pinMode("D0", 3);
       this.particle.pinMode("D1", 3);
+      this.particle.pinMode("D2", 3);
+      this.particle.pinMode("D3", 3);
       this.particle.pinMode("A0", 3);
       this.particle.pinMode("A1", 3);
       this.particle.pinMode("A4", 3);
@@ -925,20 +927,6 @@ exports["Particle.prototype.pinMode"] = {
       test.ok(true);
     } catch(e) {
       test.ok(false);
-    }
-
-    try {
-      this.particle.pinMode("D2", 3);
-      test.ok(false);
-    } catch(e) {
-      test.ok(true);
-    }
-
-    try {
-      this.particle.pinMode("D3", 3);
-      test.ok(false);
-    } catch(e) {
-      test.ok(true);
     }
 
     try {
@@ -987,11 +975,13 @@ exports["Particle.prototype.pinMode"] = {
   },
 
   servoError: function(test) {
-    test.expect(9);
+    test.expect(7);
 
     try {
       this.particle.pinMode("D0", 4);
       this.particle.pinMode("D1", 4);
+      this.particle.pinMode("D2", 4);
+      this.particle.pinMode("D3", 4);
       this.particle.pinMode("A0", 4);
       this.particle.pinMode("A1", 4);
       this.particle.pinMode("A4", 4);
@@ -1002,20 +992,6 @@ exports["Particle.prototype.pinMode"] = {
       test.ok(true);
     } catch(e) {
       test.ok(false);
-    }
-
-    try {
-      this.particle.pinMode("D2", 4);
-      test.ok(false);
-    } catch(e) {
-      test.ok(true);
-    }
-
-    try {
-      this.particle.pinMode("D3", 4);
-      test.ok(false);
-    } catch(e) {
-      test.ok(true);
     }
 
     try {
