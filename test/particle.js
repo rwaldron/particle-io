@@ -79,6 +79,8 @@ exports["Particle"] = {
       name: "pinMode"
     }, {
       name: "servoWrite"
+    }, {
+      name: "deviceInfo"
     }];
 
     this.proto.objects = [{
