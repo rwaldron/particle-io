@@ -86,7 +86,7 @@ var byId = new Particle({
 
 var byName = new Particle({
   token: process.env.PARTICLE_TOKEN,
-  deviceName: process.env.PARTICLE_DEVICE_Name || "crazy_pickle"
+  deviceName: process.env.PARTICLE_DEVICE_NAME || "crazy_pickle"
 });
 
 var byIp = new Particle({
