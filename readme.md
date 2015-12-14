@@ -95,8 +95,14 @@ var byIp = new Particle({
 });
 ```
 
-**deviceInfo()**
-You can get the information that the component knows about the chip with `deviceInfo()`.  This is useful for retrieving the IP address of the Particle so that you can swith over to `host`/`port` mode if necessary.
+**device properties**
+You can get the information that the component knows about the chip with some read-only device properties.  This is useful for retrieving the IP address of the Particle so that you can swith over to `host`/`port` mode if necessary.
+
+The available properties are:
+- `deviceId`: The ID of the device
+- `deviceName`: The name of the device
+- `deviceIp`: The IP address of the device on the local network
+- `devicePort`: The port the device is listening on for connections
 
 Example:
 ```js
@@ -108,12 +114,10 @@ var board = new Particle({
 });
 
 board.on("ready", function() {
-  var device = board.deviceInfo();
-
   console.log(
-    "Connected to " + device.name + 
-    " (" + device.id + ") " +
-    "at " + device.ip + ":" + device.port
+    "Connected to " + board.deviceName + 
+    " (" + board.deviceId + ") " +
+    "at " + board.deviceIp + ":" + board.devicePort
   );
 });
 ```
