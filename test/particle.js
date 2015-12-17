@@ -95,6 +95,14 @@ exports["Particle"] = {
       name: "pins"
     }, {
       name: "analogPins"
+    }, {
+      name: "deviceId"
+    }, {
+      name: "deviceName"
+    }, {
+      name: "deviceIp"
+    }, {
+      name: "devicePort"
     }];
 
     done();

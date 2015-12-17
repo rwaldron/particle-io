@@ -42,7 +42,8 @@ module.exports = function(grunt) {
           exports: true,
           document: true,
           WeakMap: true,
-          window: true
+          window: true,
+          Promise: true
         }
       },
       files: {

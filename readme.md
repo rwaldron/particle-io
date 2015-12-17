@@ -72,6 +72,55 @@ board.on("ready", function() {
 
 
 ### API
+**Constructor**
+The Particle component can be connected using one of three mechanisms: `deviceId`, `deviceName`, or `host`/`port`.  Both `deviceId` and `deviceName` require an additional `token` so that the host and port of the device can be retrieved from the Particle cloud.
+
+Example:
+```js
+var Particle = require("particle-io");
+
+var byId = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceId: process.env.PARTICLE_DEVICE_ID
+});
+
+var byName = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceName: process.env.PARTICLE_DEVICE_NAME || "crazy_pickle"
+});
+
+var byIp = new Particle({
+  host: '192.168.0.111',
+  port: 48879
+});
+```
+
+**device properties**
+You can get the information that the component knows about the chip with some read-only device properties.  This is useful for retrieving the IP address of the Particle so that you can swith over to `host`/`port` mode if necessary.
+
+The available properties are:
+- `deviceId`: The ID of the device
+- `deviceName`: The name of the device
+- `deviceIp`: The IP address of the device on the local network
+- `devicePort`: The port the device is listening on for connections
+
+Example:
+```js
+var Particle = require("particle-io");
+
+var board = new Particle({
+  token: process.env.PARTICLE_TOKEN,
+  deviceName: process.env.PARTICLE_DEVICE_Name || "crazy_pickle"
+});
+
+board.on("ready", function() {
+  console.log(
+    "Connected to " + board.deviceName + 
+    " (" + board.deviceId + ") " +
+    "at " + board.deviceIp + ":" + board.devicePort
+  );
+});
+```
 
 **MODES**
 
