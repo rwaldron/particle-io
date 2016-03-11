@@ -8,7 +8,7 @@ Particle-io is a Firmata-compatibility IO class for writing node programs that i
 
 In order to use the particle-io library, you will need to load the special
 [voodoospark](https://github.com/voodootikigod/voodoospark) firmware onto your
-device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.
+device. We recommend you review [VoodooSpark's Getting Started](https://github.com/voodootikigod/voodoospark#getting-started) before continuing.  There is also a screencast of how to get started: [Get Your Motor Running: Particle Photon and Johnny Five](https://www.youtube.com/watch?v=jhism2iqT7o).
 
 We also recommend storing your Particle token and device ID in a dot file so they can be accessed as properties of `process.env`. Create a file in your home directory called `.particlerc` that contains: 
 
