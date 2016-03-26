@@ -38,7 +38,7 @@ var board = new Particle({
 });
 
 board.on("ready", function() {
-  console.log("CONNECTED");
+  console.log("Device Ready..");
   this.pinMode("D7", this.MODES.OUTPUT);
 
   var byte = 0;
@@ -50,9 +50,13 @@ board.on("ready", function() {
 });
 ```
 
+#### Troubleshooting
+
+If you're board is connecting, but the `board.on("ready", ...)` event is not occuring, ensure the wifi network you are connected to allows for direct TCP client/server sockets (this form of communication is often blocked by public wifi networks).
+
 ### Johnny-Five IO Plugin
 
-Particle-IO can be used as an [IO Plugin](https://github.com/rwaldron/johnny-five/wiki/IO-Plugins) for [Johnny-Five](https://github.com/rwaldron/johnny-five):
+Particle-io can be used as an [IO Plugin](https://github.com/rwaldron/johnny-five/wiki/IO-Plugins) for [Johnny-Five](https://github.com/rwaldron/johnny-five):
 
 ```js
 var five = require("johnny-five");
@@ -65,11 +69,13 @@ var board = new five.Board({
 });
 
 board.on("ready", function() {
+  console.log("Device Ready..");
   var led = new five.Led("D7");
   led.blink();
 });
 ```
 
+See the above [Troubleshooting](#troubleshooting) section if your board is connecting, but the `board.on("ready", ...)` event is not occuring.
 
 ### API
 **Constructor**
