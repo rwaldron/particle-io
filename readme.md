@@ -52,7 +52,7 @@ board.on("ready", function() {
 
 #### Troubleshooting
 
-If you're board is connecting, but the `board.on("ready", ...)` event is not occuring, ensure the wifi network you are connected to allows for direct TCP client/server sockets (this form of communication is often blocked by public wifi networks).
+If your board is connecting, but the `board.on("ready", ...)` event is not occuring, ensure the wifi network you are connected to allows for direct TCP client/server sockets (this form of communication is often blocked by public wifi networks).
 
 ### Johnny-Five IO Plugin
 
