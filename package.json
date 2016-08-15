@@ -8,15 +8,38 @@
     "email": "waldron.rick@gmail.com"
   },
   "contributors": [
-    { "name": "Chris Williams", "email": "<chris@iterativedesigns.com>" },
-    { "name": "David Resseguie", "email": "<david@resseguie.com>" },
-    { "name": "Pawel Szymczykowski", "email": "<makenai@gmail.com>" },
-    { "name": "Remy Sharp", "email": "<remy@leftlogic.com>" },
-    { "name": "Ron Evans", "email": "<ron@hybridgroup.com>" },
-    { "name": "Brian Genisio", "email": "<BrianGenisio@Gmail.com>" }
+    {
+      "name": "Chris Williams",
+      "email": "<chris@iterativedesigns.com>"
+    },
+    {
+      "name": "David Resseguie",
+      "email": "<david@resseguie.com>"
+    },
+    {
+      "name": "Pawel Szymczykowski",
+      "email": "<makenai@gmail.com>"
+    },
+    {
+      "name": "Remy Sharp",
+      "email": "<remy@leftlogic.com>"
+    },
+    {
+      "name": "Ron Evans",
+      "email": "<ron@hybridgroup.com>"
+    },
+    {
+      "name": "Brian Genisio",
+      "email": "<BrianGenisio@Gmail.com>"
+    }
   ],
   "keywords": [
-    "particle", "spark", "io", "arduino", "firmata", "johnny-five"
+    "particle",
+    "spark",
+    "io",
+    "arduino",
+    "firmata",
+    "johnny-five"
   ],
   "repository": {
     "type": "git",
@@ -37,16 +60,15 @@
   },
   "dependencies": {
     "array-includes": "latest",
-    "es6-shim": "latest",
-    "nanotimer": "0.3.0"
+    "es6-shim": "latest"
   },
   "devDependencies": {
-    "sinon": "~1.7.3",
     "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-jsbeautifier": "~0.2.2"
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-jsbeautifier": "^0.2.13",
+    "sinon": "^1.17.5"
   },
   "scripts": {
     "test": "grunt"

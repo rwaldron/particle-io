@@ -28,9 +28,9 @@ module.exports = function(grunt) {
       options: {
         curly: true,
         eqeqeq: true,
+        esnext: true,
         immed: true,
         latedef: false,
-        newcap: true,
         noarg: true,
         sub: true,
         undef: true,
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jsbeautifier");
 
   grunt.registerTask("default", ["jshint", "nodeunit"]);
-  
+
   // Explicit test task runs complete set of tests
   grunt.registerTask("test", ["jshint", "nodeunit"]);
 };
