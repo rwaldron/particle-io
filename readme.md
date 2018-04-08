@@ -214,7 +214,7 @@ board.on("ready", function() {
 
 **servoWrite(pin, value)**
 
-> Sets the pin to a value between 0 and 180, where the value represents degrees of the servo horn. The value is converted to a PWM signal. PWM is available on D0, D1, A0, A1, A4, A5, A6 and A7.
+> If the value is less than 544, sets the pin to a value constrained between 0 and 180, where the value represents degrees of the servo horn. If the value is 545 or greater, sets the pin to a value in microseconds.
 
 Example:
 ```js
@@ -224,6 +224,34 @@ board.on("ready", function() {
 
   // Move a servo to 90 degrees
   this.servoWrite("D0", 90);
+
+});
+```
+
+```js
+var board = new Particle(...);
+
+board.on("ready", function() {
+
+  // Set the servo duty cycle to 1759 microseconds
+  // Note that the servo pwm frequency is 50mhz and 
+  // the default servo range is 600-2400 microseconds
+  this.servoWrite("D0", 1759);
+
+});
+```
+
+**servoConfig(pin, min, max)**
+
+> Sets the range for the servo PWM duty cycle. The default range is 600 - 2400 microseconds. Can be called instead of pin mode.
+
+Example:
+```js
+var board = new Particle(...);
+
+board.on("ready", function() {
+
+  this.servoConfig("D0", 690, 2310);
 
 });
 ```
