@@ -759,7 +759,6 @@ exports["Particle.prototype.servoWrite"] = {
     }
     test.done();
   },
-
   servoWriteDigital: function(test) {
     test.expect(3);
 
@@ -774,7 +773,6 @@ exports["Particle.prototype.servoWrite"] = {
     }
     test.done();
   },
-
   servoWriteAnalog: function(test) {
     test.expect(3);
 
@@ -787,6 +785,61 @@ exports["Particle.prototype.servoWrite"] = {
     for (var i = 0; i < sent.length; i++) {
       test.equal(sent[i], buffer.readUInt8(i));
     }
+    test.done();
+  },
+  servoWriteOutsideRange: function(test) {
+    test.expect(3);
+
+    var sent = [0x41, 10, 180];
+
+    this.particle.servoWrite("A0", 220);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  servoWriteMicroseconds: function(test) {
+    test.expect(4);
+
+    var sent = [0x43, 10, 14, 12];
+
+    this.particle.servoWrite("A0", 1550);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  servoWriteMicrosecondsOutsideRange: function(test) {
+    test.expect(4);
+
+    var sent = [0x43, 10, 96, 18];
+
+    this.particle.servoWrite("A0", 3000);
+
+    var buffer = this.socketwrite.args[0][0];
+
+    for (var i = 0; i < sent.length; i++) {
+      test.equal(sent[i], buffer.readUInt8(i));
+    }
+    test.done();
+  },
+  servoConfig: function(test) {
+    test.expect(4);
+
+    test.equal(this.particle.pins[10].pwm.servoMin, 600);
+    test.equal(this.particle.pins[10].pwm.servoMax, 2400);
+    
+    this.particle.servoConfig("A0", 1000, 2000);
+    
+    test.equal(this.particle.pins[10].pwm.servoMin, 1000);
+    test.equal(this.particle.pins[10].pwm.servoMax, 2000);
+    
     test.done();
   }
 };
